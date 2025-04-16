@@ -50,7 +50,7 @@ const LabelsView = ({setTitleType, type}) => {
     const [labelData, setLabelData] = useState({key: "", name: ""});
 
     useEffect(() => {
-        setTitleType(1);
+        setTitleType(2);
         if(type) setTitle(type);
         if(type === "Modes") {
             setLabels(Modes);

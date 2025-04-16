@@ -1,6 +1,6 @@
 .CuBu_Container {
     color: var(--color-four);
-    padding: 5px 10px;
+    padding: 2px 5px;
     margin: .1em;
     display: inline-flex;
     font-weight: bold;
@@ -12,6 +12,7 @@
     overflow: hidden;
     align-items: center;
     transition: 0.2s;
+    box-shadow: 1px 2px;
     &[type = "default"] {
         background-color: var(--color-one);
         border-color: var(--color-four);

@@ -4,65 +4,39 @@ import "./AddTransaction.css";
 import { useEffect, useState } from "react";
 import { Back } from "./Icons";
 
-const categories = [
-    {name: "category 1", key: "cat1"}, 
-    {name: "category 2", key: "cat2"}, 
-    {name: "category 3", key: "cat3"},
-    {name: "category 4", key: "cat4"}, 
-    {name: "category 5", key: "cat5"}, 
-    {name: "category 6", key: "cat6"}, 
-    {name: "category 2", key: "cat7"}, 
-    {name: "category 3", key: "cat8"},
-    {name: "category 4", key: "cat9"}, 
-    {name: "category 5", key: "cat10"}, 
-    {name: "category 6", key: "cat11"}, 
-    {name: "category 2", key: "cat12"}, 
-    {name: "category 3", key: "cat13"},
-    {name: "category 4", key: "cat14"}, 
-    {name: "category 5", key: "cat15"}, 
-    {name: "category 6", key: "cat16"}];
+const Categories = [
+    {key: 1, name: "Health"},
+    {key: 2, name: "Travel"},
+    {key: 3, name: "Groceries"},
+    {key: 4, name: "Food"},
+    {key: 5, name: "Shopping"},
+    {key: 6, name: "Just to keep"},
+    {key: 7, name: "Paid Back"},
+    {key: 8, name: "Bonus"},
+    {key: 9, name: "Salary"}
+];
 
-const entities = [
-    {name: "entity 1", key: "ent1"}, 
-    {name: "entity 2", key: "ent2"}, 
-    {name: "entity 3", key: "ent3"},
-    {name: "entity 4", key: "ent4"}, 
-    {name: "entity 5", key: "ent5"}, 
-    {name: "entity 6", key: "ent6"}, 
-    {name: "entity 2", key: "ent7"}, 
-    {name: "entity 3", key: "ent8"},
-    {name: "entity 4", key: "ent9"}, 
-    {name: "entity 5", key: "ent10"}, 
-    {name: "entity 6", key: "ent11"}, 
-    {name: "entity 2", key: "ent12"}, 
-    {name: "entity 3", key: "ent13"},
-    {name: "entity 4", key: "ent14"}, 
-    {name: "entity 5", key: "ent15"}, 
-    {name: "entity 6", key: "ent16"}];
+const Entities = [
+    {key: 1, name: "Railway Station"},
+    {key: 2, name: "Market"},
+    {key: 3, name: "Evergreen Foods"},
+    {key: 4, name: "Grand Father"},
+    {key: 5, name: "Friend"}
+];
 
-const tags = [
-    {name: "tag 1", key: "tag1"}, 
-    {name: "tag 2", key: "tag2"}, 
-    {name: "tag 3", key: "tag3"},
-    {name: "tag 4", key: "tag4"}, 
-    {name: "tag 5", key: "tag5"}, 
-    {name: "tag 6", key: "tag6"}, 
-    {name: "tag 2", key: "tag7"}, 
-    {name: "tag 3", key: "tag8"},
-    {name: "tag 4", key: "tag9"}, 
-    {name: "tag 5", key: "tag10"}, 
-    {name: "tag 6", key: "tag11"}, 
-    {name: "tag 2", key: "tag12"}, 
-    {name: "tag 3", key: "tag13"},
-    {name: "tag 4", key: "tag14"}, 
-    {name: "tag 5", key: "tag15"}, 
-    {name: "tag 6", key: "tag16"}];
+const Tags = [
+    {key: 1, name: "Festival"},
+    {key: 2, name: "Vacation"},
+    {key: 3, name: "Renovation"},
+    {key: 4, name: "Party"},
+    {key: 5, name: "Weekend"}];
 
-const modes = [
-    {name: "mode of transaction 1", key: "mod1"}, 
-    {name: "mode 2", key: "mod2"}, 
-    {name: "mode 3", key: "mod3"},
-    {name: "mode 4", key: "mod4"}];
+const Modes = [
+    {key: 1, name: "Cash"},
+    {key: 2, name: "Creadit Card"},
+    {key: 3, name: "UPI"},
+    {key: 4, name: "Bank 1"},
+    {key: 5, name: "Bank 2"}];
 
 const ChipQuestion = ({question, search, chips, filter, selected, onChange}) => {
     return (
@@ -75,7 +49,7 @@ const ChipQuestion = ({question, search, chips, filter, selected, onChange}) => 
             {chips.filter(chip => chip.name.includes(filter)).length ?
             chips.filter(chip => chip.name.includes(filter)).map(chip => {
                 let className = "AdTr_Chip";
-                if(typeof selected === "string") className += chip.key === selected ? " selected" : "";
+                if(typeof selected !== "object") className += chip.key === selected ? " selected" : "";
                 else className += selected.findIndex(sel => sel.key === chip.key) !== -1 ? " selected" : "";
                 return (<div className={className} key={chip.key}
                         onClick={() => onChange(chip.key)}>{chip.name}</div>)
@@ -106,17 +80,17 @@ const AddTransaction = ({setTitleType}) => {
     }, []);
     
     const onCategoryChange = (newCategory) => {
-        const newCat = categories.find(cat => cat.key === newCategory);
+        const newCat = Categories.find(cat => cat.key == newCategory);
         if(newCat.key !== category) setCategory(newCat.key);
     }
 
     const onModeChange = (newMode) => {
-        const newMod = modes.find(mod => mod.key === newMode);
+        const newMod = Modes.find(mod => mod.key === newMode);
         if(newMod.key !== mode) setMode(newMod.key);
     }
 
     const onEntityChange = (newEntity) => {
-        const newEnt = entities.find(ent => ent.key === newEntity);
+        const newEnt = Entities.find(ent => ent.key === newEntity);
         const exists = entity.findIndex(ent => ent.key === newEntity);
         if(exists !== -1) entity.splice(exists, 1);
         else entity.push(newEnt);
@@ -124,7 +98,7 @@ const AddTransaction = ({setTitleType}) => {
     }
 
     const onTagChange = (newTag) => {
-        const newTa = tags.find(tag => tag.key === newTag);
+        const newTa = Tags.find(tag => tag.key === newTag);
         const exists = tag.findIndex(tag => tag.key === newTag);
         if(exists !== -1) tag.splice(exists, 1);
         else tag.push(newTa);
@@ -166,7 +140,7 @@ const AddTransaction = ({setTitleType}) => {
                 <input type="Date" className="AdTr_Input"/>
             </div>
         </div>
-        <ChipQuestion question="Categories" search={e => applyFilterOn(e, "category")} chips={categories} filter={catSearchKey} 
+        <ChipQuestion question="Categories" search={e => applyFilterOn(e, "category")} chips={Categories} filter={catSearchKey} 
         selected={category} onChange={(cat) => onCategoryChange(cat)}/>
     </div>
     <>
@@ -186,11 +160,11 @@ const AddTransaction = ({setTitleType}) => {
             <Button text="Investment" type={motive === "investment" ? "default" : "simple"}
             press={() => setMotive("investment")}/>
         </div>
-        <ChipQuestion question="Mode of Transaction" search={e => applyFilterOn(e, "mode")} chips={modes} filter={modSearchKey} 
+        <ChipQuestion question="Mode of Transaction" search={e => applyFilterOn(e, "mode")} chips={Modes} filter={modSearchKey} 
         selected={mode} onChange={(mod) => onModeChange(mod)}/>
-        <ChipQuestion question="Entities" search={e => applyFilterOn(e, "entities")} chips={entities} filter={entSearchKey} 
+        <ChipQuestion question="Entities" search={e => applyFilterOn(e, "entities")} chips={Entities} filter={entSearchKey} 
         selected={entity} onChange={(ent) => onEntityChange(ent)}/>
-        <ChipQuestion question="Tags" search={e => applyFilterOn(e, "tags")} chips={tags} filter={tagSearchKey} 
+        <ChipQuestion question="Tags" search={e => applyFilterOn(e, "tags")} chips={Tags} filter={tagSearchKey} 
         selected={tag} onChange={(tag) => onTagChange(tag)}/>
     </div>
     </>
