@@ -1,0 +1,81 @@
+.CuBu_Container {
+    color: var(--color-four);
+    padding: 5px 10px;
+    margin: .1em;
+    display: inline-flex;
+    font-weight: bold;
+    border: 2px solid black;
+    border-radius: 10px;
+    user-select: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    align-items: center;
+    transition: 0.2s;
+    &[type = "default"] {
+        background-color: var(--color-one);
+        border-color: var(--color-four);
+    }
+    &[type = "simple"] {
+        border-color: var(--color-one);
+    }
+    &[type = "minimal"] {
+        background-color: transparent;
+        border-color: transparent;
+    }
+    &:hover:not([enabled="no"]) {
+        background-color: var(--color-five);
+    }
+    &:hover[type = "default"]:not([enabled="no"]) {
+        background-color: var(--color-five);
+    }
+    &[enabled = "no"][type = "default"] {
+        background-color: var(--color-five);
+        border-color: var(--color-five);
+        color: var(--color-two);
+        cursor: auto;
+    }
+    &[enabled = "no"][type = "simple"] {
+        border-color: var(--color-five);
+        color: var(--color-two);
+        cursor: auto;
+    }
+    &[enabled = "no"][type = "minimal"] {
+        color: var(--color-two);
+        cursor: auto;
+    }
+}
+
+.CuBu_Container i {
+    height: min-content;
+}
+
+.CuBu_Text {
+    display: inline-flex;
+}
+
+.CuBu_RippleEffect {
+    background-color: var(--color-four);
+    width: 1vw;
+    height: 1vh;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    opacity: 0;
+    border-radius: 50%;
+}
+
+.CuBu_RippleEffect_Animation {
+    animation: ripple 2s;
+    opacity: 0;
+}
+    
+@keyframes ripple {
+    from {
+        opacity: .5;
+        transform: scale(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(100);
+    }
+}

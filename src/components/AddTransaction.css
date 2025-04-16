@@ -1,0 +1,151 @@
+.AdTr_Container {
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+header {
+    top: 0;
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    .title {
+        font-size: x-large;
+        font-weight: bold;
+        color: var(--color-four);
+        margin-left: 5px;
+    }
+}
+
+footer {
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+}
+
+header, footer {
+    background: var(--color-one);
+    position: sticky;
+    width: 100%;
+    padding: 5px;
+    z-index: 5;
+    .contentRight {
+        margin-left: auto;
+    }
+}
+
+.AdTr_Questions, .AdTr_ExtraQuestions {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: start;
+    color: var(--color-four);
+    width: 100%;
+    max-width: 500px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.AdTr_ExtraQuestions:after {
+    content: "";
+    width: 100%;
+    height: 100px;
+}
+
+.AdTr_TypeQuestion, .AdTr_MotiveQuestion {
+    display: inline-flex;
+    width: 100%;
+    justify-content: center;
+    /* margin-top: 10px; */
+}
+
+.AdTr_Question {
+    font-size: large;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.AdTr_GeneralQuestion {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+}
+
+.AdTr_GroupQuestion {
+    display: flex;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.AdTr_Input {
+    width: 85%;
+    resize: none;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: large;
+    border: 1px solid var(--color-four);
+    margin-left: 2px;
+    &textarea {
+        box-sizing: border-box;
+        margin: 0 1%;
+        width: 98%;
+    }
+}
+
+.AdTr_Chips {
+    background-color: var(--color-five);
+    overflow-x: auto;
+    margin: 0 5px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    white-space: nowrap;
+    max-height: 120px;
+    user-select: none;
+    padding: 5px;
+    border-radius: 5px;
+    gap: .2rem;
+    /* max-width: 500px; */
+    .AdTr_Chip {
+        /* height: 40px; */
+        padding: 5px 10px;
+        /* margin: 2px; */
+        border: 1px solid var(--color-four);
+        border-radius: 10px;
+        font-size: small;
+        align-items: center;
+        cursor: pointer;
+        background: var(--color-one);
+        &.selected {
+            background-color: var(--color-four);
+            color: var(--color-one);
+            font-weight: bold;
+            border: 1px solid var(--color-one);
+        }
+    }
+}
+
+.AdTr_InlineSearch {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+    /* width: 100%; */
+    .AdTr_Search {
+        width: 40%;
+        resize: none;
+        border-radius: 10px;
+        padding: 2px 5px;
+        font-size: large;
+        border: 1px solid var(--color-four);
+        background: var(--color-five);
+        color: var(--color-four);
+        margin-right: 5px;
+    }
+}

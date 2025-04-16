@@ -1,0 +1,76 @@
+:root {
+  --color-one: #FFFFFF;
+  --color-two: #737373;
+  --color-three: #525252;
+  --color-four: #262626;
+  --color-five: #c4c4c4;
+}
+
+.App_Container {
+  &.light {
+    --color-one: #FFFFFF;
+    --color-two: #737373;
+    --color-three: #525252;
+    --color-four: #262626;
+    --color-five: #c4c4c4;
+  }
+  &.dark {
+    --color-one: #262626;
+    --color-two: #737373;
+    --color-three: #525252;
+    --color-four: #FFFFFF;
+    --color-five: #4c4c4c;
+  }
+  height: 100vh;
+  background: var(--color-one);
+  display: flex;
+  flex-direction: column;
+}
+
+.App_Title {
+  font-size: xxx-large;
+  font-weight: 1000;
+  margin: 2px;
+  background-image: url(https://media.giphy.com/media/kdq2QtFMXMA6svQh5E/giphy.gif?cid=ecf05e47sekn8wuut08nria58ffdtjbnj7hyjii12qtcq5dr&ep=v1_gifs_related&rid=giphy.gif&ct=g);
+  background-size: cover;
+  color: transparent;
+  -moz-background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.App_ThemeChanger {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 5px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.App_App {
+  flex: 1;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, Inter, Avenir, Helvetica, Arial, sans-serif;
+}
+
+::-webkit-scrollbar {
+  background: var(--color-one);
+  width: 1vw;
+  height: 1vh;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-two);
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .App_Title {font-size: xx-large}
+}
+
+* {
+  box-sizing: border-box;
+}

@@ -1,0 +1,134 @@
+.ViTr_Container {
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ViTr_Expenses {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    gap: .5rem;
+    padding-bottom: 100px;
+}
+
+.ViTr_Expense {
+    border: 1px solid var(--color-four);
+    border-radius: 5px;
+    /* margin: 5px 0; */
+    padding: 5px;
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    box-sizing: border-box;
+    gap: 1rem;
+    color: var(--color-four);
+    &.income {
+        background: rgb(100, 250, 100);
+        color: black;
+    }
+    .subSection {
+        display: flex;
+        flex-flow: column;
+    }
+    .amount {
+        font-size: x-large;
+        font-weight: bolder;
+        margin-left: auto;
+    }
+    .category {
+        font-size: large;
+        font-weight: bold;
+    }
+    .date {
+        font-size: small;
+    }
+    &:hover {
+        cursor: pointer;;
+    }
+}
+
+dialog {
+    border-radius: 5px;
+    max-width: 80vw;
+    max-height: 80vh;
+    background: var(--color-one);
+    color: var(--color-four);
+    padding: 0;
+    &.bottom {
+        margin-bottom: 5px;
+        width: 90vw;
+        max-width: 800px;
+    }
+}
+dialog::backdrop {
+    background: rgb(0, 0, 0, 0.4);
+}
+.ViTr_DialogDetails {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: .5rem;
+    padding: 10px;
+    span {
+        text-align: right;
+    }
+}
+.ViTr_DialogHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: x-large;
+    padding-left: 5px;
+    font-weight: bolder;
+    color: var(--color-five);
+}
+.ViTr_DialogFooter {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 5px;
+}
+
+.ViTr_SubHeader {
+    display: flex;
+    overflow-x: scroll;
+    gap: .5rem;
+    padding: 5px;
+}
+
+.ViTr_FilterChip {
+    cursor: pointer;
+    border: 1px solid var(--color-four);
+    padding: 5px 10px;
+    border-radius: 10px;
+    background-color: var(--color-one);
+    color: var(--color-four);
+    &.selected {
+        background-color: var(--color-four);
+        color: var(--color-one);
+    }
+}
+
+.ViTr_FilterDialogContent {
+    display: flex;
+    gap: .5rem;
+    padding: 5px;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+}
+
+@media (max-width: 1024px) {
+  .ViTr_Expenses {grid-template-columns: 1fr 1fr;}
+}
+
+@media (max-width: 768px) {
+  .ViTr_Expenses {grid-template-columns: 1fr;}
+}

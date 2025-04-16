@@ -1,0 +1,28 @@
+main.LaVi_Container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: .5rem;
+    padding: 5px;
+}
+
+.LaVi_label {
+    display: flex;
+    border-radius: 10px;
+    background-color: var(--color-four);
+    color: var(--color-one);
+    padding: 10px;
+    font-size: large;
+    font-weight: bold;
+}
+
+.LaVi_DialogContainer {
+    padding: 5px;
+}
+
+@media (max-width: 1024px) {
+    main.LaVi_Container {grid-template-columns: 1fr 1fr 1fr;}
+}
+
+@media (max-width: 768px) {
+    main.LaVi_Container {grid-template-columns: 1fr 1fr;}
+}

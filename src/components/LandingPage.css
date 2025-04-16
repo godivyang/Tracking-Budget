@@ -1,0 +1,55 @@
+.LaPa_Container {
+    display: inline-flex;
+    vertical-align: bottom;
+    width: 100vw;
+    height: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    background: var(--color-one);
+    .LaPa_SubContainer {
+        width: 100%;
+        align-items: start;
+        .LaPa_Title {
+            font-size: x-large;
+            font-weight: 700;
+            margin: 4% 2% 0 2%;
+            color: var(--color-four);
+        }
+        .LaPa_Tile {
+            display: inline-flex;
+            border: 1px solid black;
+            border-radius: 10px;
+            padding: 5px;
+            height: 60px;
+            width: 120px;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            background: white;
+            cursor: pointer;
+            vertical-align: bottom;
+            &:hover {
+                background: lightgrey;
+                transform: translate(5px, -5px);
+                transition: 0.2s;
+            }
+        }
+    }
+}
+
+.LaPa_TileContainer {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    padding: 10px;
+}
+
+.LaPa_SubContainer.first {order: 1}
+.LaPa_SubContainer.second {order: 2}
+@media (max-width: 768px) {
+    .LaPa_SubContainer.first {order: 2}
+    .LaPa_SubContainer.second {order: 1}
+    .LaPa_Container {justify-content: flex-end}
+    .LaPa_SubContainer {align-items: center}
+}
