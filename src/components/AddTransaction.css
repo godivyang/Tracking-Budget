@@ -28,7 +28,6 @@ footer {
 }
 
 header, footer {
-    background: var(--color-one);
     position: sticky;
     width: 100%;
     padding: 5px;
