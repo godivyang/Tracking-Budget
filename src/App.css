@@ -21,7 +21,7 @@
     --color-four: #FFFFFF;
     --color-five: #4c4c4c;
   }
-  height: 100vh;
+  height: 100dvh;
   background: var(--color-one);
   display: flex;
   flex-direction: column;
