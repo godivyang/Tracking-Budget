@@ -4,7 +4,7 @@ import Button from './components/Button';
 import LandingPage from './components/LandingPage';
 
 const App = () => {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
   const [titleType, setTitleType] = useState(1);
 
   const changeThemeTo = (newTheme) => {
