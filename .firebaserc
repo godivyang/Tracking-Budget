@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "theawakening-zg"
+  },
+  "targets": {
+    "theawakening-zg": {
+      "hosting": {
+        "Tracking-Budget": [
+          "Tracking-Budget"
+        ],
+        "tracking-budget": [
+          "ult-tracking-budget"
+        ]
+      }
+    }
   }
 }
