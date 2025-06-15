@@ -25,6 +25,7 @@ footer {
     bottom: 0;
     display: flex;
     justify-content: center;
+    background: var(--color-one);
 }
 
 header, footer {

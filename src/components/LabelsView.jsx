@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import Button from "./Button";
 import { Back, Close, Add } from "./Icons";
+import { motion } from "framer-motion";
 import "./LabelsView.css";
 
 const Categories = [
@@ -113,18 +114,29 @@ const LabelsView = ({setTitleType, type}) => {
             <Button text="Save" press={onSaveClick}/>
         </div>
     </dialog>
-    <header>
+    <motion.header 
+        key="Header"
+        initial={{ x: -window.innerWidth, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: -window.innerWidth, opacity: 0 }}
+        transition={{ type: "spring", duration: 0.4 }}>
         <Button press={() => navigate("/")} icon={<Back/>}/>
         <span className="title">{title}</span>
         <span className="contentRight">
             <Button press={addNew} icon={<Add/>} text="New"/>
         </span>
-    </header>
-    <main className="LaVi_Container">
+    </motion.header>
+    <motion.main 
+        key="Main"
+        initial={{ y: window.innerHeight, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: window.innerHeight, opacity: 0 }}
+        transition={{ type: "spring", duration: 0.4 }}
+        className="LaVi_Container">
         {labels.map(label => 
             <div key={label.key} className="LaVi_label" onClick={() => onLabelClick(label)}>{label.name}</div>
         )}
-    </main>
+    </motion.main>
     </>)
 }
 

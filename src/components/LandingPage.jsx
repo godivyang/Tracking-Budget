@@ -4,6 +4,7 @@ import AddTransaction from "./AddTransaction";
 import { useEffect } from "react";
 import ViewTransactions from "./ViewTransactions";
 import LabelsView from "./LabelsView";
+import { motion } from "framer-motion";
 
 const HomePage = ({setTitleType}) => {
     const navigate = useNavigate();
@@ -24,7 +25,13 @@ const HomePage = ({setTitleType}) => {
     }
 
     return (
-        <div className="LaPa_Container">
+        <motion.div 
+            key="Home"
+            initial={{ x: -window.innerWidth, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -window.innerWidth, opacity: 0 }}
+            transition={{ type: "spring", duration: 0.4 }} 
+            className="LaPa_Container">
             <div className="LaPa_SubContainer first">
                 <div className="LaPa_Title">Transactions</div>
                     <div className="LaPa_TileContainer">
@@ -42,7 +49,7 @@ const HomePage = ({setTitleType}) => {
                     <span className="LaPa_Tile" onClick={() => onTileClick(7)}>Tags</span>
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }
 

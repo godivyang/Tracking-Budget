@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import "./AddTransaction.css";
 import { useEffect, useState } from "react";
 import { Back } from "./Icons";
+import { motion } from "framer-motion";
 
 const Categories = [
     {key: 1, name: "Health"},
@@ -119,11 +120,22 @@ const AddTransaction = ({setTitleType}) => {
 
     return (
     <main className="AdTr_Container">
-    <header>
+    <motion.header 
+        key="Header"
+        initial={{ x: -window.innerWidth, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: -window.innerWidth, opacity: 0 }}
+        transition={{ type: "spring", duration: 0.4 }}>
         <Button press={() => navigate("/")} icon={<Back/>}/>
         <span className="title">Add Transaction</span>
-    </header>
-    <div className="AdTr_Questions">
+    </motion.header>
+    <motion.div 
+        key="Main"
+        initial={{ y: -window.innerHeight, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -window.innerHeight, opacity: 0 }}
+        transition={{ type: "spring", duration: 0.4 }}
+        className="AdTr_Questions">
         <div className="AdTr_TypeQuestion">
             <Button text="Expense" type={type === "expense" ? "default" : "simple"}
             press={() => setType("expense")}/>
@@ -142,12 +154,18 @@ const AddTransaction = ({setTitleType}) => {
         </div>
         <ChipQuestion question="Categories" search={e => applyFilterOn(e, "category")} chips={Categories} filter={catSearchKey} 
         selected={category} onChange={(cat) => onCategoryChange(cat)}/>
-    </div>
+    </motion.div>
     <>
     {moreInfoVisible ?
     <>
     <Button text="Hide more info..." type="Minimal" press={() => setMoreInfoVisible(false)}/>
-    <div className="AdTr_ExtraQuestions">
+    <motion.div 
+        key="More"
+        initial={{ y: window.innerHeight, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: window.innerHeight, opacity: 0 }}
+        transition={{ type: "spring", duration: 0.4 }}
+        className="AdTr_ExtraQuestions">
         <div className="AdTr_GeneralQuestion">
             <span className="AdTr_Question">Description:</span>
             <textarea className="AdTr_Input"/>
@@ -166,15 +184,14 @@ const AddTransaction = ({setTitleType}) => {
         selected={entity} onChange={(ent) => onEntityChange(ent)}/>
         <ChipQuestion question="Tags" search={e => applyFilterOn(e, "tags")} chips={Tags} filter={tagSearchKey} 
         selected={tag} onChange={(tag) => onTagChange(tag)}/>
-    </div>
+    </motion.div>
     </>
     :
     <Button text="Add more info..." type="Default" press={() => setMoreInfoVisible(true)}/>
     }
     </>
     <footer><Button text="Submit" enabled="no"/></footer>
-    </main>
-    )
+    </main>)
 }
 
 export default AddTransaction;

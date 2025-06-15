@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './App.css';
 import Button from './components/Button';
 import LandingPage from './components/LandingPage';
+import { motion, spring } from "framer-motion";
 
 const App = () => {
   const [theme, setTheme] = useState("dark");
@@ -12,9 +13,13 @@ const App = () => {
   };
 
   return (
+    // <AnimatePresence mode="wait">
     <div className={`App_Container ${theme}`}>
-      <div className="App_Title">
-        TRACKing{titleType === 1 ? <br/> : <>&nbsp;</>}BUDGET
+      <div 
+        style={{flexFlow: titleType === 1 ? "column" : "row"}}
+        className={`App_Title`}>
+        <motion.span>TRACKing&nbsp;</motion.span>
+        <motion.span layout>BUDGET</motion.span>
       </div>
       <div className="App_ThemeChanger">
         <Button text="Light" press={() => changeThemeTo("light")} 
@@ -24,6 +29,7 @@ const App = () => {
       </div>
       <div className="App_App"><LandingPage setTitleType = {setTitleType}/></div>
     </div>
+    // </AnimatePresence>
   );
 };
 

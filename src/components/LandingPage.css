@@ -10,15 +10,15 @@
     .LaPa_SubContainer {
         width: 100%;
         align-items: start;
+        color: var(--color-four);
         .LaPa_Title {
             font-size: x-large;
             font-weight: 700;
             margin: 4% 2% 0 2%;
-            color: var(--color-four);
         }
         .LaPa_Tile {
             display: inline-flex;
-            border: 1px solid black;
+            border: 1px solid var(--color-four);
             border-radius: 10px;
             padding: 5px;
             height: 60px;
@@ -26,11 +26,12 @@
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            background: white;
+            background: var(--color-one);
             cursor: pointer;
             vertical-align: bottom;
             &:hover {
                 background: lightgrey;
+                color: var(--color-one);
                 transform: translate(5px, -5px);
                 transition: 0.2s;
             }
