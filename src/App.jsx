@@ -1,10 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import Button from './components/Button';
 import LandingPage from './components/LandingPage';
-import { motion, spring } from "framer-motion";
+import { motion } from "framer-motion";
+import { checkIfLogin } from './api/trackingBudget';
 
 const App = () => {
+  useEffect(() => {
+    checkIfLogin().then((user) => {
+      console.log("user",user);
+    }).catch();
+  }, []);
+
   const [theme, setTheme] = useState("dark");
   const [titleType, setTitleType] = useState(1);
 

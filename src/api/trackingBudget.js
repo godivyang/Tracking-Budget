@@ -1,0 +1,19 @@
+import axios from "axios";
+
+const baseURL = process.env.REACT_APP_BASE_URL;
+
+const axiosInstance = axios.create({
+    baseURL,
+    withCredentials: true
+});
+
+const checkIfLogin = async () => {
+    try {
+        const response = await axiosInstance.get("/user/me");
+        return response.data;
+    } catch (e) {
+        window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY + "?redirect=" + process.env.REACT_APP_ULTIMATE_UTILITY;
+    }
+};
+
+export { checkIfLogin };
