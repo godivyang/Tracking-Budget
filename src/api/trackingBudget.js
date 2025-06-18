@@ -12,7 +12,7 @@ const checkIfLogin = async () => {
         const response = await axiosInstance.get("/user/me");
         return response.data;
     } catch (e) {
-        window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY + "?redirect=" + process.env.REACT_APP_ULTIMATE_UTILITY;
+        window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET";
     }
 };
 
