@@ -9,7 +9,9 @@ const App = () => {
   useEffect(() => {
     checkIfLogin().then((user) => {
       console.log("user",user);
-    }).catch();
+    }).catch((e) => {
+      window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET";
+    });
   }, []);
 
   const [theme, setTheme] = useState("dark");
