@@ -12,7 +12,7 @@ const checkIfLogin = async () => {
         const response = await axiosInstance.get("/user/me");
         return response.data;
     } catch (e) {
-        
+        throw new Error({"message": e.error});
     }
 };
 
