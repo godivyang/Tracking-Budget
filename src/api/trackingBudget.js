@@ -7,9 +7,9 @@ const axiosInstance = axios.create({
     withCredentials: true
 });
 
-const checkIfLogin = async () => {
+const checkIfLogin = async (token) => {
     try {
-        const response = await axiosInstance.get("/user/me");
+        const response = await axiosInstance.post("/user/me", { token });
         return response.data;
     } catch (e) {
         throw new Error({"message": e.error});

@@ -7,7 +7,9 @@ import { checkIfLogin } from './api/trackingBudget';
 
 const App = () => {
   useEffect(() => {
-    checkIfLogin().then((user) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    checkIfLogin(token).then((user) => {
       console.log("user",user);
     }).catch((e) => {
       console.log("redirecting to login");
