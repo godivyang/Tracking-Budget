@@ -7,13 +7,6 @@ const axiosInstance = axios.create({
     withCredentials: true
 });
 
-axios.create({
-    baseURL: "https://ult-userAuth.onrender.com",
-    withCredentials: true
-}).get("/user/me")
-    .then((user) => console.log("user", user))
-    .catch((e) => console.log("no cookie"));
-
 const checkIfLogin = async () => {
     try {
         const response = await axiosInstance.get("/user/me");

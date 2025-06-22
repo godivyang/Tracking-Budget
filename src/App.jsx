@@ -10,7 +10,8 @@ const App = () => {
     checkIfLogin().then((user) => {
       console.log("user",user);
     }).catch((e) => {
-      window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET";
+      console.log("redirecting to login");
+      // window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET";
     });
   }, []);
 
@@ -35,6 +36,7 @@ const App = () => {
         type={theme === "light" ? "default" : "simple"}/>
         <Button text="Dark" press={() => changeThemeTo("dark")} 
         type={theme === "dark" ? "default" : "simple"}/>
+        <Button text="Login" press={()=>{window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET"}}/>
       </div>
       <div className="App_App"><LandingPage setTitleType = {setTitleType}/></div>
     </div>
