@@ -6,19 +6,22 @@ import { motion } from "framer-motion";
 import { checkIfLogin } from './api/trackingBudget';
 
 const App = () => {
+  const [theme, setTheme] = useState("dark");
+  const [titleType, setTitleType] = useState(1);
+  const [userName, setUserName] = useState("");
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
     checkIfLogin(code).then((user) => {
-      console.log("user",user);
+      // console.log("user",user);
+      setUserName(user.name);
+      if(code) window.location.href = process.env.REACT_APP_TRACKING_BUDGET_URL;
     }).catch((e) => {
-      console.log("redirecting to login");
-      // window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET";
+      // console.log("redirecting to login");
+      window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET";
     });
   }, []);
-
-  const [theme, setTheme] = useState("dark");
-  const [titleType, setTitleType] = useState(1);
 
   const changeThemeTo = (newTheme) => {
     if(theme !== newTheme) setTheme(newTheme);
@@ -34,11 +37,11 @@ const App = () => {
         <motion.span layout>BUDGET</motion.span>
       </div>
       <div className="App_ThemeChanger">
+        <div className="welcome">Welcome {userName}!</div>
         <Button text="Light" press={() => changeThemeTo("light")} 
         type={theme === "light" ? "default" : "simple"}/>
         <Button text="Dark" press={() => changeThemeTo("dark")} 
         type={theme === "dark" ? "default" : "simple"}/>
-        <Button text="Login" press={()=>{window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET"}}/>
       </div>
       <div className="App_App"><LandingPage setTitleType = {setTitleType}/></div>
     </div>

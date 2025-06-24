@@ -45,12 +45,18 @@
 
 .App_ThemeChanger {
   display: inline-flex;
+  align-items: center;
   padding: 4px 10px;
   border-radius: 5px;
   position: absolute;
   top: 0;
   right: 0;
   z-index: 5;
+  .welcome {
+    font-weight: bold;
+    color: var(--color-four);
+    margin-right: 4px;
+  }
 }
 
 .App_App {
