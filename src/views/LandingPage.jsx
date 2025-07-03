@@ -53,17 +53,17 @@ const HomePage = ({setTitleType}) => {
     )
 }
 
-const LandingPage = ({setTitleType}) => {
+const LandingPage = ({setTitleType, busyIndicator}) => {
     return (
     <Routes>
-        <Route path="/" element={<HomePage setTitleType={setTitleType}/>}/>
-        <Route path="AddTransaction" element={<AddTransaction setTitleType={setTitleType}/>}/>
-        <Route path="ViewTransactions" element={<ViewTransactions setTitleType={setTitleType}/>}/>
+        <Route path="/" element={<HomePage setTitleType={setTitleType} busyIndicator={busyIndicator}/>}/>
+        <Route path="AddTransaction" element={<AddTransaction setTitleType={setTitleType} busyIndicator={busyIndicator}/>}/>
+        <Route path="ViewTransactions" element={<ViewTransactions setTitleType={setTitleType} busyIndicator={busyIndicator}/>}/>
 
-        <Route path="Labels/Entities" element={<LabelsView setTitleType={setTitleType} type="Entities"/>}/>
-        <Route path="Labels/Categories" element={<LabelsView setTitleType={setTitleType} type="Categories"/>}/>
-        <Route path="Labels/Modes" element={<LabelsView setTitleType={setTitleType} type="Modes"/>}/>
-        <Route path="Labels/Tags" element={<LabelsView setTitleType={setTitleType} type="Tags"/>}/>
+        <Route path="Labels/Entities" element={<LabelsView setTitleType={setTitleType} type="entity" busyIndicator={busyIndicator}/>}/>
+        <Route path="Labels/Categories" element={<LabelsView setTitleType={setTitleType} type="category" busyIndicator={busyIndicator}/>}/>
+        <Route path="Labels/Modes" element={<LabelsView setTitleType={setTitleType} type="mode" busyIndicator={busyIndicator}/>}/>
+        <Route path="Labels/Tags" element={<LabelsView setTitleType={setTitleType} type="tag" busyIndicator={busyIndicator}/>}/>
     </Routes>)
 }
 

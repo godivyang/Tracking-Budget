@@ -13,7 +13,6 @@
     width: 100%;
     padding: 5px;
     box-sizing: border-box;
-    height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
     gap: .5rem;
@@ -26,8 +25,9 @@
 
 .ViTr_Expense {
     border: 1px solid var(--color-four);
+    max-height: 100px;
+    height: fit-content;
     border-radius: 5px;
-    /* margin: 5px 0; */
     padding: 5px;
     display: inline-flex;
     width: 100%;
@@ -60,22 +60,6 @@
     }
 }
 
-dialog {
-    border-radius: 5px;
-    max-width: 80vw;
-    max-height: 80vh;
-    background: var(--color-one);
-    color: var(--color-four);
-    padding: 0;
-    &.bottom {
-        margin-bottom: 5px;
-        width: 90vw;
-        max-width: 800px;
-    }
-}
-dialog::backdrop {
-    background: rgb(0, 0, 0, 0.4);
-}
 .ViTr_DialogDetails {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -84,21 +68,11 @@ dialog::backdrop {
     span {
         text-align: right;
     }
-}
-.ViTr_DialogHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: x-large;
-    padding-left: 5px;
-    font-weight: bolder;
-    color: var(--color-five);
-}
-.ViTr_DialogFooter {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 5px;
+    strong {
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 }
 
 .ViTr_SubHeader {

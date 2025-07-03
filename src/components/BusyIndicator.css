@@ -1,0 +1,48 @@
+.BusyIndicator-Container {
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.8);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    font-family: "JetBrains Mono", monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: lightGrey;
+    .Content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 20vh;
+        max-height: 500px;
+        width: 60vw;
+        font-size: 2vw;
+        .Word {
+            color: var(--color-one);
+            font-size: 4vw;
+            transition: opacity 0.5s;
+            animation: upDown 2s 1s ease infinite alternate;
+            margin: 0.8vw;
+            font-weight: bolder;
+            font-weight: bold;
+        }
+    }
+}
+
+@keyframes upDown {
+    0% {
+        transform: translateY(0vh);
+        color: var(--color-one);
+    }
+    50% {
+          transform: translateY(-2vh) scale(2.5);
+          color: var(--color-three);
+    }
+    100% {
+        transform: translateY(0vh);
+        color: var(--color-one);
+    }
+}

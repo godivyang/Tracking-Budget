@@ -13,6 +13,7 @@ main.LaVi_Container {
     padding: 10px;
     font-size: large;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .LaVi_DialogContainer {
