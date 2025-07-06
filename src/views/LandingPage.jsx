@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from "react-router";
 import AddTransaction from "./AddTransaction";
 import { useEffect } from "react";
 import ViewTransactions from "./ViewTransactions";
+import UploadTransactions from "./UploadTransactions";
 import LabelsView from "./LabelsView";
 import { motion } from "framer-motion";
 
@@ -37,7 +38,7 @@ const HomePage = ({setTitleType}) => {
                     <div className="LaPa_TileContainer">
                         <span className="LaPa_Tile" onClick={() => onTileClick(1)}>Add</span>
                         <span className="LaPa_Tile" onClick={() => onTileClick(2)}>View</span>
-                        <span className="LaPa_Tile">Upload</span>
+                        <span className="LaPa_Tile" onClick={() => onTileClick(3)}>Upload</span>
                     </div>
                 </div>
             <div className="LaPa_SubContainer second">
@@ -59,6 +60,7 @@ const LandingPage = ({setTitleType, busyIndicator}) => {
         <Route path="/" element={<HomePage setTitleType={setTitleType} busyIndicator={busyIndicator}/>}/>
         <Route path="AddTransaction" element={<AddTransaction setTitleType={setTitleType} busyIndicator={busyIndicator}/>}/>
         <Route path="ViewTransactions" element={<ViewTransactions setTitleType={setTitleType} busyIndicator={busyIndicator}/>}/>
+        <Route path="UploadTransactions" element={<UploadTransactions setTitleType={setTitleType} busyIndicator={busyIndicator}/>}/>
 
         <Route path="Labels/Entities" element={<LabelsView setTitleType={setTitleType} type="entity" busyIndicator={busyIndicator}/>}/>
         <Route path="Labels/Categories" element={<LabelsView setTitleType={setTitleType} type="category" busyIndicator={busyIndicator}/>}/>

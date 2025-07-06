@@ -1,0 +1,40 @@
+.UpTr_Header {
+    display: flex;
+    color: var(--color-four);
+    padding: 1%;
+    .FileDropArea {
+        display: flex;
+        height: 40vh;
+        width: 100%;
+        border-radius: 10px;
+        justify-content: center;
+        align-items: center;
+        background: var(--color-five);
+    }
+    .FileDropArea.Hovering {
+        background: var(--color-four);
+        color: var(--color-one);
+    }
+    span {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.UpTr_AfterFileUpload {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1%;
+    .FileName {
+        width: max-content;
+        display: flex;
+        font-weight: bold;
+        background: var(--color-four);
+        color: var(--color-one);
+        flex: 1;
+        border-radius: 10px;
+        justify-content: center;
+        align-items: center;
+        padding: 2%;
+    }
+}
