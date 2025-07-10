@@ -62,6 +62,8 @@
 .App_App {
   flex: 1;
   overflow: hidden;
+  display: flex;
+  flex-flow: column;
 }
 
 body {

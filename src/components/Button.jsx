@@ -11,6 +11,7 @@ const Button = ({ text, press = () => {}, icon, enabled = "yes", type = "default
     const rippleContainer = useRef(null);
 
     const onButtonClick = (oEvent) => {
+        oEvent.stopPropagation();
         if(enabled && enabled === "no") {
             return;
         }
@@ -37,6 +38,7 @@ const Button = ({ text, press = () => {}, icon, enabled = "yes", type = "default
     }
 
     const onButtonClickThroughKeyboard = (oEvent) => {
+        oEvent.stopPropagation();
         // key code 13 is for Enter key
         if(oEvent.keyCode === 13) {
             onButtonClick(oEvent);

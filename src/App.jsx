@@ -5,6 +5,7 @@ import LandingPage from './views/LandingPage';
 import { motion } from "framer-motion";
 import { checkIfLogin } from './api/trackingBudget';
 import BusyIndicator from './components/BusyIndicator';
+import { Theme } from './lib/Icons';
 
 const App = () => {
   const [theme, setTheme] = useState("dark");
@@ -29,8 +30,9 @@ const App = () => {
     });
   }, []);
 
-  const changeThemeTo = (newTheme) => {
-    if(theme !== newTheme) setTheme(newTheme);
+  const changeTheme = () => {
+    if(theme == "light") setTheme("dark");
+    else setTheme("light");
   };
 
   const showBusyIndicator = (flag, message="") => {
@@ -49,11 +51,8 @@ const App = () => {
         <motion.span layout>BUDGET</motion.span>
       </div>
       <div className="App_ThemeChanger">
-        <div className="welcome">Welcome {userName}!</div>
-        <Button text="Light" press={() => changeThemeTo("light")} 
-        type={theme === "light" ? "default" : "simple"}/>
-        <Button text="Dark" press={() => changeThemeTo("dark")} 
-        type={theme === "dark" ? "default" : "simple"}/>
+        {userName && <Button text={userName} type="Minimal"/>}
+        <Button icon={<Theme/>} press={changeTheme}/>
       </div>
       <div className="App_App"><LandingPage setTitleType = {setTitleType} busyIndicator={showBusyIndicator}/></div>
     </div>

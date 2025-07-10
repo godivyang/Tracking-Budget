@@ -20,12 +20,14 @@ const Dialog = ({title="Dialog", content, footer, closeDialog=()=>{}, open=false
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: window.innerHeight, opacity: 0 }}
         transition={{ type: "spring", duration: 0.4 }} 
-        className={`Dialog_Body ${bottom ? "bottom" : ""}`}>
+        className={`Dialog_Container ${bottom ? "bottom" : ""}`}>
             <div className="Dialog_Header">
                 <span>{title}</span>
                 <Button icon={<Close/>} press={closeDialog} type="minimal"/>
             </div>
+            <div className="Dialog_Body">
             {content}
+            </div>
             <div className="Dialog_Footer">
                 {footer}
             </div>

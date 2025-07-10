@@ -25,16 +25,103 @@
     display: flex;
     flex-direction: column;
     padding: 0 1%;
+    font-size: x-small;
     .FileName {
         width: max-content;
+        /* max-width: 40vw; */
+        /* height: 10vh; */
         display: flex;
         font-weight: bold;
         background: var(--color-four);
         color: var(--color-one);
-        flex: 1;
         border-radius: 10px;
         justify-content: center;
         align-items: center;
         padding: 2%;
+        span {
+            display: flex;
+            max-width: 30vw;
+            overflow: auto;
+        }
     }
+}
+
+.UpTr_Body {
+    overflow: auto;
+    height: 100%;
+}
+
+.UpTr_Transactions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    gap: .5rem;
+    margin-bottom: 40vh;
+}
+
+.UpTr_Transactions .Transaction {
+    border: 1px solid var(--color-four);
+    max-height: 100px;
+    height: 100%;
+    border-radius: 5px;
+    padding: 5px;
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    box-sizing: border-box;
+    gap: 1rem;
+    color: var(--color-four);
+    &.income {
+        background: rgb(100, 250, 100);
+        color: black;
+    }
+    .subSection {
+        display: flex;
+        flex-flow: column;
+    }
+    .amount {
+        font-size: x-large;
+        font-weight: bolder;
+        margin-left: auto;
+    }
+    .category {
+        font-size: large;
+        font-weight: bold;
+    }
+    .date {
+        font-size: small;
+    }
+    &:hover {
+        cursor: pointer;;
+    }
+    &.error {
+        border-left: 10px solid red;
+    }
+}
+
+.UpTr_DialogDetails {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: .5rem;
+    padding: 10px;
+    span {
+        text-align: right;
+    }
+    strong {
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}
+
+@media (max-width: 1024px) {
+  .UpTr_Transactions {grid-template-columns: 1fr 1fr;}
+}
+
+@media (max-width: 768px) {
+  .UpTr_Transactions {grid-template-columns: 1fr;}
 }

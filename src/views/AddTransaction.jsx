@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Back } from "../lib/Icons";
 import { motion } from "framer-motion";
 import { addTransaction, getLabels } from "../api/trackingBudget";
+import ChipsQuestion from "../components/ChipsQuestion";
 import Dialog from "../components/Dialog";
 
 const Categories = [
@@ -79,20 +80,16 @@ const SuccessFragment = (details) => {
     </div>)
 };
 
-const AddTransaction = ({setTitleType}) => {
+const AddTransaction = ({setTitleType=()=>{}, editObj, updateEditObj}) => {
     const navigate = useNavigate();
     const [type, setType] = useState("expense");
     const [date, setDate] = useState(new Date().getTime());
     const [amount, setAmount] = useState(0);
-    const [category, setCategory] = useState("");
+    const [category, setCategory] = useState({});
     const [description, setDescription] = useState("");
-    const [catSearchKey, setCatSearchKey] = useState("");
     const [entities, setEntities] = useState([]);
-    const [entSearchKey, setEntSearchKey] = useState("");
     const [tags, setTags] = useState([]);
-    const [tagSearchKey, setTagSearchKey] = useState("");
-    const [mode, setMode] = useState("");
-    const [modSearchKey, setModSearchKey] = useState("");
+    const [mode, setMode] = useState({});
     const [motive, setMotive] = useState("need");
     const [moreInfoVisible, setMoreInfoVisible] = useState(false);
     const [addTransactionModel, setAddTransactionModel] = useState({categories: [], entities: [], modes: [], tags: [], details: null});
@@ -102,12 +99,29 @@ const AddTransaction = ({setTitleType}) => {
     useEffect(() => {
         setTitleType(2);
         Promise.all([getLabels("category"), getLabels("entity"), getLabels("mode"), getLabels("tag")])
-        .then(([categories, entities, modes, tags]) => {
-            addTransactionModel.categories = categories;
-            addTransactionModel.entities = entities;
-            addTransactionModel.modes = modes;
-            addTransactionModel.tags = tags;
+        .then(([_categories, _entities, _modes, _tags]) => {
+            addTransactionModel.categories = _categories;
+            addTransactionModel.entities = _entities;
+            addTransactionModel.modes = _modes;
+            addTransactionModel.tags = _tags;
             setAddTransactionModel({...addTransactionModel});
+            if(editObj) {
+                if(editObj.type) setType(editObj.type);
+                if(editObj.amount) setAmount(editObj.amount);
+                if(editObj.date) setDate(editObj.date);
+                if(editObj.category) setCategory(_categories.find(cat => cat.description === editObj.category));
+                if(editObj.mode) setMode(_modes.find(mod => mod.description === editObj.mode));
+                if(editObj.motive) setMotive(editObj.motive);
+                if(editObj.description) setDescription(editObj.description);
+                if(editObj.entities) {
+                    const entSet = new Set(editObj.entities);
+                    setEntities(_entities.filter(ent => entSet.has(ent.description)));
+                }
+                if(editObj.tags) {
+                    const tagSet = new Set(editObj.tags);
+                    setTags(_tags.filter(tag => tagSet.has(tag.description)));
+                }
+            }
         });
     }, []);
 
@@ -116,52 +130,46 @@ const AddTransaction = ({setTitleType}) => {
             setValidated(true);
         } else setValidated(false);
     }, [date, amount, category]);
-    
-    const onCategoryChange = (newCategory) => {
-        const newCat = addTransactionModel.categories.find(cat => cat._id == newCategory);
-        if(newCat._id !== category) setCategory(newCat._id);
-    }
 
-    const onModeChange = (newMode) => {
-        const newMod = addTransactionModel.modes.find(mod => mod._id === newMode);
-        if(newMod._id !== mode) setMode(newMod._id);
-    }
-
-    const onEntitiesChange = (newEntity) => {
-        const newEnt = addTransactionModel.entities.find(ent => ent._id === newEntity);
-        const exists = entities.findIndex(ent => ent._id === newEntity);
-        if(exists !== -1) entities.splice(exists, 1);
-        else entities.push(newEnt);
-        setEntities([...entities]);
-    }
-
-    const onTagsChange = (newTag) => {
-        const newTa = addTransactionModel.tags.find(tag => tag._id === newTag);
-        const exists = tags.findIndex(tag => tag._id === newTag);
-        if(exists !== -1) tags.splice(exists, 1);
-        else tags.push(newTa);
-        setTags([...tags]);
-    }
-
-    const applyFilterOn = (e, type) => {
-        if(type === "category") {
-            setCatSearchKey(e.target.value);
-        } else if(type === "entities") {
-            setEntSearchKey(e.target.value);
-        } else if(type === "mode") {
-            setModSearchKey(e.target.value);
-        } else if(type === "tags") {
-            setTagSearchKey(e.target.value);
-        }
-    }
+    useEffect(() => {
+        if(editObj.type) setType(editObj.type);
+        else setType("expense");
+        if(editObj.amount) setAmount(editObj.amount);
+        else setAmount(0);
+        if(editObj.date) setDate(editObj.date);
+        else setDate(new Date().getTime());
+        if(editObj.category) setCategory(addTransactionModel.categories.find(cat => cat.description === editObj.category));
+        else setCategory({});
+        if(editObj.mode) setMode(addTransactionModel.modes.find(mod => mod.description === editObj.mode));
+        else setMode({});
+        if(editObj.motive) setMotive(editObj.motive);
+        else setMotive("need");
+        if(editObj.description) setDescription(editObj.description);
+        else setDescription("");
+        if(editObj.entities) {
+            const entSet = new Set(editObj.entities);
+            setEntities(addTransactionModel.entities.filter(ent => entSet.has(ent.description)));
+        } else setEntities([]);
+        if(editObj.tags) {
+            const tagSet = new Set(editObj.tags);
+            setTags(addTransactionModel.tags.filter(tag => tagSet.has(tag.description)));
+        } else setTags([]);
+    }, [editObj]);
 
     const onSubmitClick = () => {
+        console.log({
+            date: new Date(date).getTime(), 
+            amount, type, description, motive, 
+            mode: mode._id, category: category._id, 
+            entities: entities.map(entity => entity._id), tags: tags.map(tag => tag._id)
+        })
         addTransaction({
             date: new Date(date).getTime(), 
-            amount, type, category, description, motive, mode, 
+            amount, type, description, motive, 
+            mode: mode._id, category: category._id, 
             entities: entities.map(entity => entity._id), tags: tags.map(tag => tag._id)
         }).then((details) => {
-            console.log(details)
+            resetForm();
             addTransactionModel.details = details;
             setAddTransactionModel({...addTransactionModel});
             showSuccessDialog();
@@ -174,15 +182,15 @@ const AddTransaction = ({setTitleType}) => {
         setType("expense");
         setDate(new Date().getTime());
         setAmount(0);
-        setCategory("");
+        setCategory({});
         setDescription("");
-        setCatSearchKey("");
+        // setCatSearchKey("");
         setEntities([]);
-        setEntSearchKey("");
+        // setEntSearchKey("");
         setTags([]);
-        setTagSearchKey("");
-        setMode("");
-        setModSearchKey("");
+        // setTagSearchKey("");
+        setMode({});
+        // setModSearchKey("");
         setMotive("need");
         setMoreInfoVisible(false);
     }
@@ -207,19 +215,97 @@ const AddTransaction = ({setTitleType}) => {
         return newDate.toISOString().split("T")[0];
     }
 
+    const updateCategory = (chip) => {
+        setCategory(chip);
+        if(editObj) {
+            editObj.category = chip.description;
+            updateEditObj({...editObj});
+        }
+    }
+
+    const updateDescription = (e) => {
+        const value = e.target.value;
+        setDescription(value);
+        if(editObj) {
+            editObj.description = value;
+            updateEditObj({...editObj});
+        }
+    }
+
+    const updateAmount = (e) => {
+        const value = Number(e.target.value);
+        setAmount(value);
+        if(editObj) {
+            editObj.amount = value;
+            updateEditObj({...editObj});
+        }
+    }
+
+    const updateDate = (e) => {
+        const value = dateFormatter(e.target.value);
+        setDate(value);
+        if(editObj) {
+            editObj.date = value;
+            updateEditObj({...editObj});
+        }
+    }
+
+    const updateType = (value) => {
+        setType(value);
+        if(editObj) {
+            editObj.type = value;
+            updateEditObj({...editObj});
+        }
+    }
+
+    const updateMotive = (value) => {
+        setMotive(value);
+        if(editObj) {
+            editObj.motive = value;
+            updateEditObj({...editObj});
+        }
+    }
+
+    const updateMode = (chip) => {
+        setMode(chip);
+        if(editObj) {
+            editObj.mode = chip.description;
+            updateEditObj({...editObj});
+        }
+    }
+
+    const updateTags = (chips) => {
+        setTags([...chips]);
+        if(editObj) {
+            if(chips.length) editObj.tags = chips.map(chip => chip.description);
+            else delete editObj.tags;
+            console.log(editObj)
+            updateEditObj({...editObj});
+        }
+    }
+
+    const updateEntities = (chips) => {
+        setEntities([...chips]);
+        if(editObj) {
+            if(chips.length) editObj.entities = chips.map(chip => chip.description);
+            else delete editObj.entities;
+            updateEditObj({...editObj});
+        }
+    }
+
     return (
     <main className="AdTr_Container">
     <Dialog title="Success" open={successDialogOpen} content={addTransactionModel.details && SuccessFragment(addTransactionModel.details)} 
     closeDialog={() => setSuccessDialogOpen(false)} 
     footer={<><Button text="Add New" press={addNewClick}/><Button text="View Transactions" press={viewTransactionsPress}/></>}/>
-    <motion.header 
+    {!editObj && <motion.header 
         initial={{ x: -window.innerWidth, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: -window.innerWidth, opacity: 0 }}
         transition={{ type: "spring", duration: 0.4 }}>
         <Button press={() => navigate("/")} icon={<Back/>}/>
         <span className="title">Add Transaction</span>
-    </motion.header>
+    </motion.header>}
     <motion.div 
         initial={{ y: -window.innerHeight, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -228,22 +314,23 @@ const AddTransaction = ({setTitleType}) => {
         className="AdTr_Questions">
         <div className="AdTr_TypeQuestion">
             <Button text="Expense" type={type === "expense" ? "default" : "simple"}
-            press={() => setType("expense")}/>
+            press={() => updateType("expense")}/>
             <Button text="Income" type={type === "income" ? "default" : "simple"}
-            press={() => setType("income")}/>
+            press={() => updateType("income")}/>
         </div>
         <div className="AdTr_GroupQuestion">
             <div className="AdTr_GeneralQuestion">
                 <span className="AdTr_Question">Amount:</span>
-                <input className="AdTr_Input" type="Number" value={Number(amount)} onChange={(e) => setAmount(e.target.value)}/>
+                <input className="AdTr_Input" type="Number" value={Number(amount)} onChange={updateAmount}/>
             </div>
             <div className="AdTr_GeneralQuestion">
                 <span className="AdTr_Question">Date:</span>
-                <input type="Date" className="AdTr_Input" value={dateFormatter(date)} onChange={(e) => setDate(e.target.value)}/>
+                <input type="Date" className="AdTr_Input" value={dateFormatter(date)} onChange={updateDate}/>
             </div>
         </div>
-        <ChipQuestion question="Categories" search={e => applyFilterOn(e, "category")} chips={addTransactionModel.categories} filter={catSearchKey} 
-        selected={category} onChange={(cat) => onCategoryChange(cat)}/>
+        <ChipsQuestion question="Categories" chips={addTransactionModel.categories} chipSelected={category} onChange={updateCategory}/>
+        {/* <ChipsQuestion question="Categories" search={e => applyFilterOn(e, "category")} chips={addTransactionModel.categories} filter={catSearchKey} 
+        selected={category} onChange={(cat) => onCategoryChange(cat)}/> */}
     </motion.div>
     <>
     {moreInfoVisible ?
@@ -258,29 +345,26 @@ const AddTransaction = ({setTitleType}) => {
         className="AdTr_ExtraQuestions">
         <div className="AdTr_GeneralQuestion">
             <span className="AdTr_Question">Description:</span>
-            <textarea className="AdTr_Input" value={description} onChange={(e) => setDescription(e.target.value)}/>
+            <textarea className="AdTr_Input" value={description} onChange={updateDescription}/>
         </div>
         <div className="AdTr_MotiveQuestion">
             <Button text="Want" type={motive === "want" ? "default" : "simple"}
-            press={() => setMotive("want")}/>
+            press={() => updateMotive("want")}/>
             <Button text="Need" type={motive === "need" ? "default" : "simple"}
-            press={() => setMotive("need")}/>
+            press={() => updateMotive("need")}/>
             <Button text="Investment" type={motive === "investment" ? "default" : "simple"}
-            press={() => setMotive("investment")}/>
+            press={() => updateMotive("investment")}/>
         </div>
-        <ChipQuestion question="Mode of Transaction" search={e => applyFilterOn(e, "mode")} chips={addTransactionModel.modes} 
-        filter={modSearchKey} selected={mode} onChange={(mod) => onModeChange(mod)}/>
-        <ChipQuestion question="Entities" search={e => applyFilterOn(e, "entities")} chips={addTransactionModel.entities} 
-        filter={entSearchKey} selected={entities} onChange={(ent) => onEntitiesChange(ent)}/>
-        <ChipQuestion question="Tags" search={e => applyFilterOn(e, "tags")} chips={addTransactionModel.tags} 
-        filter={tagSearchKey} selected={tags} onChange={(tag) => onTagsChange(tag)}/>
+        <ChipsQuestion question="Mode of Transaction" chips={addTransactionModel.modes} chipSelected={mode} onChange={updateMode}/>
+        <ChipsQuestion question="Entities" chips={addTransactionModel.entities} chipSelected={entities} onChange={updateEntities} multiSelect={true}/>
+        <ChipsQuestion question="Tags" chips={addTransactionModel.tags} chipSelected={tags} onChange={updateTags} multiSelect={true}/>
     </motion.div>
     </>
     :
     <Button text="Add more info..." type="Default" press={() => setMoreInfoVisible(true)}/>
     }
     </>
-    <footer><Button text="Submit" enabled={validated ? "yes" : "no"} press={onSubmitClick}/></footer>
+    {!editObj && <footer><Button text="Submit" enabled={validated ? "yes" : "no"} press={onSubmitClick}/></footer>}
     </main>)
 }
 
