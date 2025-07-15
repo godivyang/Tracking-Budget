@@ -21,8 +21,8 @@ const App = () => {
     let loginTriesFlag = localStorage.getItem("TrackingBudget-Login-Tries");
     if(!loginTriesFlag) {
       localStorage.setItem("TrackingBudget-Login-Tries", "fresh");
-    } else if(loginTriesFlag === "tried") {
-      alert("Login Failed");
+    } else if(loginTriesFlag === "tried" && urlParams) {
+      alert("SSO Login Failed");
       return;
     }
     checkIfLogin(code).then((userName) => {
