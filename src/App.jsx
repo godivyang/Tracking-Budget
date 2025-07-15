@@ -14,6 +14,13 @@ const App = () => {
   const [busyVisible, setBusyVisible] = useState(false);
   const [busyMessage, setBusyMessage] = useState("");
 
+// "TrackingBudget-Login-Tries" logic:
+// if it is not present in localstorage, set it to "fresh"
+//   login will be checked, if user is logged in, this variable is removed
+//   otherwise this variable gets the value of "tried" and redirects to UltimateUtility for SSO
+// if it is present and has a vlaue "tried" its value will be set to "final"
+//   login will be checked, if user is logged in or not, this variable is removed
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
@@ -21,13 +28,17 @@ const App = () => {
     let loginTriesFlag = localStorage.getItem("TrackingBudget-Login-Tries");
     if(!loginTriesFlag) {
       localStorage.setItem("TrackingBudget-Login-Tries", "fresh");
-    } else if(loginTriesFlag === "tried" && code) {
-      alert("SSO Login Failed");
+    } else if(loginTriesFlag === "tried") {
+      localStorage.setItem("TrackingBudget-Login-Tries", "final");
+    } else {
+      localStorage.removeItem("TrackingBudget-Login-Tries");
+      alert("SSO LOGIN FAILED!");
+      showBusyIndicator(false);
       return;
     }
     checkIfLogin(code).then((userName) => {
       // console.log("user",user);
-      localStorage.setItem("TrackingBudget-Login-Tries", "");
+      localStorage.removeItem("TrackingBudget-Login-Tries");
       setUserName(userName);
       if(code) window.location.href = process.env.REACT_APP_TRACKING_BUDGET_URL;
     }).catch((e) => {
@@ -35,6 +46,9 @@ const App = () => {
       if(localStorage.getItem("TrackingBudget-Login-Tries") === "fresh") {
         window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET";
         localStorage.setItem("TrackingBudget-Login-Tries", "tried");
+      } else {
+        localStorage.removeItem("TrackingBudget-Login-Tries");
+        alert("SSO LOGIN FAILED!");
       }
     }).then(() => {
       showBusyIndicator(false);
