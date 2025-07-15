@@ -20,21 +20,21 @@ const App = () => {
     showBusyIndicator(true, "Please wait, you are getting authenticated.");
     let loginTriesFlag = localStorage.getItem("TrackingBudget-Login-Tries");
     if(!loginTriesFlag) {
-      localStorage.setItem("TrackingBudget-Login-Tries", 1);
-    } else if(loginTriesFlag === 2) {
+      localStorage.setItem("TrackingBudget-Login-Tries", "fresh");
+    } else if(loginTriesFlag === "tried") {
       alert("Login Failed");
       return;
     }
     checkIfLogin(code).then((userName) => {
       // console.log("user",user);
-      localStorage.setItem("TrackingBudget-Login-Tries", 0);
+      localStorage.setItem("TrackingBudget-Login-Tries", "");
       setUserName(userName);
       if(code) window.location.href = process.env.REACT_APP_TRACKING_BUDGET_URL;
     }).catch((e) => {
       // console.log("redirecting to login");
-      if(localStorage.getItem("TrackingBudget-Login-Tries") === 1) {
+      if(localStorage.getItem("TrackingBudget-Login-Tries") === "fresh") {
         window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET";
-        localStorage.setItem("TrackingBudget-Login-Tries", 2);
+        localStorage.setItem("TrackingBudget-Login-Tries", "tried");
       }
     }).then(() => {
       showBusyIndicator(false);
