@@ -18,13 +18,24 @@ const App = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
     showBusyIndicator(true, "Please wait, you are getting authenticated.");
+    let loginTriesFlag = localStorage.getItem("TrackingBudget-Login-Tries");
+    if(!loginTriesFlag) {
+      localStorage.setItem("TrackingBudget-Login_Tries", 1);
+    } else if(loginTriesFlag === 2) {
+      alert("Login Failed");
+      return;
+    }
     checkIfLogin(code).then((userName) => {
       // console.log("user",user);
+      localStorage.setItem("TrackingBudget-Login_Tries", 0);
       setUserName(userName);
       if(code) window.location.href = process.env.REACT_APP_TRACKING_BUDGET_URL;
     }).catch((e) => {
       // console.log("redirecting to login");
-      window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET";
+      if(localStorage.getItem("TrackingBudget-Login-Tries") === 1) {
+        window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=TRACKING_BUDGET";
+        localStorage.setItem("TrackingBudget-Login-Tries", 2);
+      }
     }).then(() => {
       showBusyIndicator(false);
     });
