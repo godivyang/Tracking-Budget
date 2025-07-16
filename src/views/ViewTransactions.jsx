@@ -5,22 +5,23 @@ import Button from "../components/Button";
 import { Back, Income, Expense, Close } from "../lib/Icons";
 import { getLabels, getTransactions } from "../api/trackingBudget";
 import Dialog from "../components/Dialog";
+import ChipsQuestion from "../components/ChipsQuestion";
 
 const Filters = {
     Date: {title: "Date",
         key: 1,
         filters: [
-            {description: "This month", selected: false, _id: 1},
-            {description: "Last 30 days", selected: false, _id: 2},
-            {description: "Last 90 days", selected: false, _id: 3},
+            {description: "This month", selected: false, _id: 1, days: new Date().getDate()},
+            {description: "Last 30 days", selected: false, _id: 2, days: 30},
+            {description: "Last 90 days", selected: false, _id: 3, days: 90},
         ]},
     Amount: {title: "Amount",
         key: 2,
         filters: [
-            {description: "Upto ₹200", selected: false, _id: 1},
-            {description: "₹200 - ₹500", selected: false, _id: 2},
-            {description: "₹500 - ₹2000", selected: false, _id: 3},
-            {description: "Above ₹2000", selected: false, _id: 4},
+            {description: "Upto ₹200", selected: false, _id: 1, amount: "0-200"},
+            {description: "₹200 - ₹500", selected: false, _id: 2, amount: "200-500"},
+            {description: "₹500 - ₹2000", selected: false, _id: 3, amount: "500-2000"},
+            {description: "Above ₹2000", selected: false, _id: 4, amount: "2000-"},
         ]},
     Type: {title: "Type",
         key: 3,
@@ -98,27 +99,21 @@ const DetailsFragment = (details) => (
         {details.tags && details.tags.length ? <><span>Tags: </span><strong>{(details.tags||[]).join(", ")}</strong></> : undefined}
     </div>);
 
-const FiltersFragment = (filters) => (
-    <div className="ViTr_FilterDialogContent">
-        {filters.map(f => <div className="ViTr_FilterChip" key={f._id}>{f.description}</div>)}
-    </div>);
-
 const ViewTransactions = ({setTitleType, busyIndicator}) => {
     const navigate = useNavigate();
     const [details, setDetails] = useState(null);
-    const [filters, setFilters] = useState(null);
     const [transactions, setTransactions] = useState([]);
     const [filterSelected, setFilterSelected] = useState(null);
     const [filterModel, setFilterModel] = useState(Filters);
     const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
     const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+    const [filterDialogData, setFilterDialogData] = useState([]);
 
     const dialog = useRef(null);
     const filterDialog = useRef(null);
 
     useEffect(() => {
         setTitleType(2);
-        setFilters();
         busyIndicator(true, "Loading your transactions...");
         Promise.all([getTransactions(), getLabels("category"), getLabels("entity"), getLabels("mode"), getLabels("tag")])
         .then(([transactions, categories, entities, modes, tags]) => {
@@ -135,21 +130,67 @@ const ViewTransactions = ({setTitleType, busyIndicator}) => {
         });
     }, []);
 
+    const FiltersFragment = () => (
+    <ChipsQuestion 
+        chips={filterDialogData} 
+        multiSelect={["Type","Category","Mode","Tags","Entities","Motive"].includes(filterSelected)} 
+        chipSelected={filterDialogData.filter(filter => filter.selected )} 
+        onChange={(selected)=>{
+            if(!Array.isArray(selected)) selected = [selected];
+            const selectedIds = new Set();
+            selected.forEach(filter => selectedIds.add(filter._id));
+            const newFilters = filterDialogData.map(filter => ({
+                ...filter,
+                selected: selectedIds.has(filter._id)
+            }));
+            setFilterDialogData(newFilters);
+        }}/>);
+
     const onTransactionClick = (transaction) => {
         setDetails({...transaction});
         setDetailsDialogOpen(true);
     }
 
-    const onCloseDialog = () => {
-        dialog.current.close();
-    }
-
-    const onCloseFilterDialog = () => {
-        filterDialog.current.close();
+    const getFilteredData = () => {
+        let filter = {}, curr;
+        curr = filterModel.Date.filters;
+        for(let i = 0; i < curr.length; i++) {
+            if(curr[i].selected) {
+                filter.date = {};
+                let time = new Date().getTime();
+                filter.date.$lte = time;
+                filter.date.$gte = time - (curr[i].days * 24 * 60 * 60 * 1000);
+                break;
+            }
+        }
+        curr = filterModel.Amount.filters;
+        for(let i = 0; i < curr.length; i++) {
+            if(curr[i].selected) {
+                filter.amount = {};
+                let amount = curr[i].amount.split("-");
+                filter.amount.$gte = Number(amount[0]) || 0;
+                if(amount[1]) filter.amount.$lte = Number(amount[1]);
+                break;
+            }
+        }
+        let temp = ["Category","Mode","Tags","Entities"];
+        temp.forEach(label => {
+            const filterArray = filterModel[label].filters.filter(filter => filter.selected).map(filter => filter._id);
+            if(filterArray.length) filter[label.toLowerCase()] = { $in: filterArray };
+        });
+        temp = ["Type","Motive"];
+        temp.forEach(label => {
+            const filterArray = filterModel[label].filters.filter(filter => filter.selected).map(filter => filter.description.toLowerCase());
+            if(filterArray.length) filter[label.toLowerCase()] = { $in: filterArray };
+        });
+        getTransactions(filter).then((transactions) => {
+            setTransactions(transactions);
+        });
     }
     
     const onFilterChipClick = (title) => {
         setFilterSelected(title);
+        setFilterDialogData(JSON.parse(JSON.stringify(filterModel[title].filters)));
         setFilterDialogOpen(true);
     }
 
@@ -157,8 +198,24 @@ const ViewTransactions = ({setTitleType, busyIndicator}) => {
     <>
     <Dialog title="Details" content={details && DetailsFragment(details)} footer={<><Button text="Delete"/><Button text="Edit"/></>} 
         closeDialog={() => setDetailsDialogOpen(false)} open={detailsDialogOpen}/>
-    <Dialog title={filterSelected} content={filterModel && filterSelected && FiltersFragment(filterModel[filterSelected].filters)} bottom={true}
-        footer={<><Button text="Clear"/><Button text="Done"/></>} closeDialog={() => setFilterDialogOpen(false)} open={filterDialogOpen} />
+    <Dialog 
+    title={filterSelected} 
+    content={<FiltersFragment 
+        filterDialogData={filterDialogData}
+        setFilterDialogData={setFilterDialogData}/>} 
+    bottom={true}
+    footer={<>
+        <Button text="Clear" press={() => {
+            setFilterDialogData(filterDialogData.map((filter) => ({...filter, selected: false})));
+        }}/>
+        <Button text="Done" press={() => {
+            filterModel[filterSelected].filters = filterDialogData;
+            setFilterModel({...filterModel});
+            setFilterDialogOpen(false);
+            getFilteredData();
+        }}/></>} 
+    closeDialog={() => setFilterDialogOpen(false)} 
+    open={filterDialogOpen} />
     
     <header>
         <Button press={() => navigate("/")} icon={<Back/>}/>

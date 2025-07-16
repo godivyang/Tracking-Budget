@@ -15,70 +15,70 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
     import.meta.url
 ).toString();
 
-const TransactionFragment = (details, categories, changeCategory) => {
-    return details ? 
-    <div className="UpTr_DialogDetails">
-        <span>Date: </span><strong>{new Date(details.date).toDateString()}</strong>
-        <span>Amount: </span><strong>₹{details.amount}</strong>
-        <span>Type: </span><strong>{details.type === "income" ? "Income" : "Expense"}</strong>
-        <div style={{gridColumn: "1/3"}}>
-            <ChipsQuestion question="Category" chips={categories} chipSelected={details.category}
-            onChange={(chip) => changeCategory(chip.description)}/>
-        </div>
-        {details.description ? <><span>Description: </span><textarea value={details.description}></textarea></> : undefined}
-        {details.motive ? <><span>Motive: </span><strong>{details.motive === "want" ? "Want" : details.motive === "need" ? "Need" : "Investment"}</strong></> : undefined}
-        {details.mode ? <><span>Mode: </span><strong>{details.mode}</strong></> : undefined}
-        {details.entities && details.entities.length ? <><span>Entities: </span><strong>{(details.entities||[]).join(", ")}</strong></> : undefined}
-        {details.tags && details.tags.length ? <><span>Tags: </span><strong>{(details.tags||[]).join(", ")}</strong></> : undefined}
-    </div>
-    :
-    undefined
-}
-
-const _extractTransactionsFromPDF = (pdf) => {
+const _extractTransactionsFromPDF = (pdf, headerLocations=[]) => {
     pdf.sort((a,b) => b.transform[5] - a.transform[5]);  // sorting words based on their vertical position in pdf
-    let res = [];
+    let headerFound = false;
+    if(headerLocations.length) {
+        pdf = pdf.filter(item => item.transform[5] <= (headerLocations[0].transform[5] + 6));
+        headerFound = true;
+    }
+    let row = [];
     const arr = [];
     let prev = 0;
-    let headerFound = false;
     for(let entry of pdf) {
         if(!prev) prev = entry.transform[5];
-        if(Math.abs(entry.transform[5] - prev) < 6) res.push(entry);  // to deal with certain words not aligned properly
-        else {
-            res = res.filter(cell => cell.str.trim());  // filtering out all columns that are empty
-            if(!headerFound) {
-                let flag = false;
-                for(let i = 0; i < res.length; i++) {
-                    if(res[i].str.includes("Date")) {
-                        flag = true;
+        if(Math.abs(entry.transform[5] - prev) < 6) { // to deal with certain words not aligned properly
+            let flag = 0, remove;
+            if(row.length) {
+                for(let r of row) {
+                    if(r.transform[4] - entry.transform[4] - entry.width < 6 && r.transform[4] - entry.transform[4] - entry.width > 4) {
+                        entry.str += r.str;
+                        flag = 1;
+                        remove = r;
+                        break;
+                    } else if(entry.transform[4] - r.transform[4] - r.width < 6 && entry.transform[4] - r.transform[4] - r.width > 4) {
+                        r.str += entry.str;
+                        flag = 2;
                         break;
                     }
                 }
-                if(flag && res.length >= 5 && res.length <= 7) {
+            }
+            if(flag === 0) row.push(entry);
+            else if(flag === 1) {
+                row.push(entry);
+                row = row.filter(r => r.str != remove.str);
+            }
+        } else {
+            row = row.filter(cell => cell.str.trim());  // filtering out all columns that are empty
+            if(!headerFound) {
+                let flag = 0;
+                for(let i = 0; i < row.length; i++) {
+                    if(row[i].str.includes("Date") || row[i].str.includes("Narration")) {
+                        flag++;
+                        if(flag === 2) break;
+                    }
+                }
+                if(flag === 2 && row.length >= 5 && row.length <= 7) {
                     headerFound = true;
-                    res.sort((a,b) => a.transform[4] - b.transform[4]);  // sorting based on their horizontal position in pdf
-                    arr.push([...res]);
+                    row.sort((a,b) => a.transform[4] - b.transform[4]);  // sorting based on their horizontal position in pdf
+                    headerLocations = [...row];
                 }
             } else {
                 let flag = false;
-                if(res.length == 1 && res[0].str.toLowerCase().includes("statement summary")) {
+                if(row.length == 1 && (row[0].str.toLowerCase().includes("statement summary") || row[0].str.toLowerCase().includes("hdfc bank limited"))) {
                     flag = true;
                 }
                 if(flag) break;
-                arr.push([...res]);
+                arr.push([...row]);
             }
-            res = [entry];
+            row = [entry];
             prev = entry.transform[5];
         }
     }
     // console.log(arr);
     const table = [];
-    if(arr.length == 0) return table;
-    const headers = arr[0].map(cell => cell.str.replaceAll("/",""));
-    const headerLocations = arr[0].map(cell => cell.transform[4]);
-    arr.shift();
-    let lastRowIndex = -1;
-    headers[1]  = "description"; // It is named as "Narration", we want it as "Description" for our 
+    if(arr.length == 0) return { table, headerLocations };
+    headerLocations[1].str  = "description"; // It is named as "Narration", we want it as "Description" for our 
     // console.log(headers);
     for(let i = 0; i < arr.length; i++) {
         const row = arr[i];
@@ -86,7 +86,7 @@ const _extractTransactionsFromPDF = (pdf) => {
             table[table.length - 1]["description"] += row[0].str;
         } else if(row.length > 2) {
             let rowData = {};
-            if(headers.length === 5) {
+            if(headerLocations.length === 5) {
                 const cell = row[3];
                 if(cell.str.includes("(Cr)")) {
                     rowData["amount"] = Number(cell.str.split("(Cr)")[0].replaceAll(",","").trim());
@@ -95,9 +95,9 @@ const _extractTransactionsFromPDF = (pdf) => {
                     rowData["amount"] = Number(cell.str.split("(Dr)")[0].replaceAll(",","").trim());
                     rowData["type"] = "expense";
                 }
-            } else if(headers.length === 7) {
+            } else if(headerLocations.length === 7) {
                 let cell = row[4];
-                if(cell && cell.transform[4] + cell.width < headerLocations[5]) {
+                if(cell && cell.transform[4] + cell.width < headerLocations[5].transform[4]) {
                     rowData["amount"] = Number(cell.str.replaceAll(",",""));
                     rowData["type"] = "expense";
                 } else if(cell) {
@@ -117,52 +117,7 @@ const _extractTransactionsFromPDF = (pdf) => {
             table.push(rowData);
         }
     }
-    [].forEach((row, i) => {
-        console.log(i, row, table.length)
-        if(Math.abs(row.length - headers.length) > 1 && lastRowIndex != -1) {  // considering there can be rows with 1 empty cells
-            row.forEach(cell => {
-                let minDiff = Infinity, req = 0;
-                arr[lastRowIndex].forEach((parentCell, j) => {
-                    let loc = parentCell.transform[4];
-                    if(Math.abs(cell.transform[4] - loc) < minDiff) {
-                        minDiff = Math.round(cell.transform[4] - loc);
-                        req = j;
-                    }
-                });
-                arr[lastRowIndex][req].str += cell.str;
-            });
-        } else {
-            let rowData = {};
-            if(lastRowIndex != -1) {
-                // console.log(arr, lastRowIndex);
-                arr[lastRowIndex].forEach((cell, j) => {
-                    // console.log(rowData)
-                    if(!headerLocations[5] && j == 3) {
-                        if(cell.str.includes("(Cr)")) {
-                            rowData["amount"] = Number(cell.str.split("(Cr)")[0].replaceAll(",","").trim());
-                            rowData["type"] = "income";
-                        } else if(cell.str.includes("(Dr)")) {
-                            rowData["amount"] = Number(cell.str.split("(Dr)")[0].replaceAll(",","").trim());
-                            rowData["type"] = "expense";
-                        }
-                    } else if(j == 4 && headerLocations[5]) {
-                        if(cell.transform[4] + cell.width < headerLocations[5] && cell.str) {
-                            rowData["amount"] = cell.str;
-                            rowData["type"] = "expense";
-                        } else if(cell.str) {
-                            rowData[headers[5]] = cell.str;
-                            rowData["type"] = "income";
-                        }
-                    } else if(j == 0 || j == 1) {
-                        rowData[headers[j]] = cell.str;
-                    }
-                });
-                table.push(rowData);
-            }
-            if(Math.abs(row.length - headers.length) <= 1) lastRowIndex = i;
-        }
-    });
-    return table;
+    return {table, headerLocations};
 }
 
 const UploadTransactions = ({setTitleType, busyIndicator}) => {
@@ -212,12 +167,14 @@ const UploadTransactions = ({setTitleType, busyIndicator}) => {
             reader.onload = async () => {
                 const typedArray = new Uint8Array(reader.result);
                 const pdf = await pdfjsLib.getDocument(typedArray).promise;
-                let extractedTransactions = [];
+                let extractedTransactions = [], headerLocations = [];
 
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
-                    _extractTransactionsFromPDF(textContent.items).forEach(row => extractedTransactions.push(row));
+                    const pageData = _extractTransactionsFromPDF(textContent.items, headerLocations);
+                    pageData.table.forEach(row => extractedTransactions.push(row));
+                    headerLocations = pageData.headerLocations;
                 }
 
                 setTransactions(extractedTransactions);
@@ -237,6 +194,8 @@ const UploadTransactions = ({setTitleType, busyIndicator}) => {
     const onUploadFile = (e) => {
         if(e.target.files.length == 0) return;
         setFileName(e.target.files[0].name);
+        _handleFileRead(e.target.files[0]);
+        e.target.value = "";
     }
 
     const handleFileDrop = (e) => {

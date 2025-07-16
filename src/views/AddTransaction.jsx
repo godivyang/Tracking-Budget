@@ -132,6 +132,7 @@ const AddTransaction = ({setTitleType=()=>{}, editObj, updateEditObj}) => {
     }, [date, amount, category]);
 
     useEffect(() => {
+        if(!editObj) return;
         if(editObj.type) setType(editObj.type);
         else setType("expense");
         if(editObj.amount) setAmount(editObj.amount);

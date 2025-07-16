@@ -14,7 +14,6 @@ const ChipsQuestion = ({question, chips, onChange, chipSelected=[], multiSelect=
             }
             if(!isEqual) setSelected(JSON.parse(JSON.stringify(chipSelected)));
         }
-        // console.log(chipSelected)
     }, [chipSelected]);
 
     const onChipChange = (chip, index) => {
@@ -33,12 +32,12 @@ const ChipsQuestion = ({question, chips, onChange, chipSelected=[], multiSelect=
     return (
     <div className="ChQu_Chips">
     <span className="InlineSearch">
-        <span className="Question">{question}:</span>
-        <input type="Search" className="Search" onInput={(e) => setFilter(e.target.value)} placeholder="search"/>
+        <span className="Question">{question}{question ? ":" : undefined}</span>
+        <input type="Search" className="Search" onInput={(e) => setFilter(e.target.value.toLowerCase())} placeholder="search"/>
     </span>
     <div className="Chips">
-        {chips.filter(chip => chip.description && chip.description.includes(filter)).length ?
-         chips.filter(chip => chip.description && chip.description.includes(filter)).map((chip, i) => {
+        {chips.filter(chip => chip.description && chip.description.toLowerCase().includes(filter)).length ?
+         chips.filter(chip => chip.description && chip.description.toLowerCase().includes(filter)).map((chip, i) => {
             let className = "Chip";
             className += selected.find(_chip => _chip._id == chip._id) ? " selected" : "";
             return (<div className={className} key={chip._id} onClick={()=>onChipChange(chip, i)}>

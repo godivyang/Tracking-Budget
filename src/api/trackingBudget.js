@@ -79,9 +79,9 @@ export const addTransaction = async (transaction) => {
 // ____________________
 // reading transactions
 // ____________________
-export const getTransactions = async () => {
+export const getTransactions = async (filter={}) => {
     try {
-        const response = await axiosInstance.get(`/transaction`);
+        const response = await axiosInstance.post(`/transaction/filter`, filter);
         return response.data;
     } catch (e) {
         throw new Error(e);
