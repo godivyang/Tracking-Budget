@@ -1,17 +1,28 @@
-import { defineConfig, loadEnv } from '@rsbuild/core';
+import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
-const { publicVars, rawPublicVars } = loadEnv({ prefixes: ['REACT_APP_'] });
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+const envVars = {};
+
+for (const key in process.env) {
+  if (key.startsWith('REACT_APP_')) {
+    envVars[`process.env.${key}`] = JSON.stringify(process.env[key]);
+  }
+}
 
 export default defineConfig({
   source: {
     define: {
-      // Expose publicVars (e.g., REACT_APP_API_URL) directly
-      // Rsbuild typically handles this automatically if @rsbuild/plugin-react is used
-      ...publicVars
+      ...envVars
     },
   },
   plugins: [pluginReact()],
   html: {
     title: "Tracking Budget"
+  },
+  server: {
+    port: 3001,
   }
 });

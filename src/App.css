@@ -89,3 +89,36 @@ body {
   box-sizing: border-box;
   transition: background-color .2s ease-in;
 }
+
+
+.HomePage-Waiting-Container {
+  margin: 2rem;
+  gap: 2rem;
+  color: black;
+  font-weight: 700;
+  display: flex;
+  flex-flow: column;
+  width: fit-content;
+  .CustomBackground {
+      background: hsla(300, 85%, 45%, 1);
+      background: linear-gradient(90deg, hsla(300, 85%, 45%, 1) 0%, hsla(320, 85%, 65%, 1) 100%);
+      background: -moz-linear-gradient(90deg, hsla(300, 85%, 45%, 1) 0%, hsla(320, 85%, 65%, 1) 100%);
+      background: -webkit-linear-gradient(90deg, hsla(300, 85%, 45%, 1) 0%, hsla(320, 85%, 65%, 1) 100%);
+      filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#CC19CC", endColorstr="#F27DF2", GradientType=1 );
+      border-radius: 5px;
+      padding: 1.5rem;
+      font-size: large;
+  }
+  .AppName {
+      color: white;
+      font-size: min(15vw, 3.75rem);
+      font-weight: 900;
+      line-height: 1;
+  }
+  .WaitingTime {
+      background: magenta;
+      padding: .75rem;
+      border-radius: 5px;
+      width: fit-content;
+  }
+}
