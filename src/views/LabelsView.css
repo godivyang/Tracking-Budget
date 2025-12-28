@@ -3,6 +3,7 @@ main.LaVi_Container {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: .5rem;
     padding: 5px;
+    overflow: scroll;
 }
 
 .LaVi_label {
