@@ -15,10 +15,18 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
     import.meta.url
 ).toString();
 
-const _extractTransactionsFromPDF = (pdf, headerLocations=[]) => {
+const _metadata_ = {
+    tableHeaders: {
+        "description": ["Description", "Narration"],
+        "date": ["Date"]
+    }
+};
+
+const _extractTransactionsFromPDF = (pdf, headerLocations=[], noHeaders=0) => {
     pdf.sort((a,b) => b.transform[5] - a.transform[5]);  // sorting words based on their vertical position in pdf
-    let headerFound = false;
-    if(headerLocations.length) {
+    let headerFound = false, originalPDF = JSON.parse(JSON.stringify(pdf));
+    // for some statements, table headers on multiple pages don't align with each other
+    if(headerLocations.length && noHeaders === 1) {
         pdf = pdf.filter(item => item.transform[5] <= (headerLocations[0].transform[5] + 6));
         headerFound = true;
     }
@@ -51,14 +59,17 @@ const _extractTransactionsFromPDF = (pdf, headerLocations=[]) => {
         } else {
             row = row.filter(cell => cell.str.trim());  // filtering out all columns that are empty
             if(!headerFound) {
-                let flag = 0;
-                for(let i = 0; i < row.length; i++) {
-                    if(row[i].str.includes("Date") || row[i].str.includes("Narration")) {
-                        flag++;
-                        if(flag === 2) break;
+                let flag = [false, false]; // its for [date header, description header]
+                for(let col of row) {
+                    if(flag[0] === false && _metadata_.tableHeaders.date.includes(col.str)) {
+                        flag[0] = true;
+                    }
+                    if(flag[1] === false && _metadata_.tableHeaders.description.includes(col.str)) {
+                        flag[1] = true;
                     }
                 }
-                if(flag === 2 && row.length >= 5 && row.length <= 7) {
+                // Checking for "Date" and "Description" / "Narration" column, if both present, flag will be [true, true]
+                if(flag[0] && flag[1] && row.length >= 5 && row.length <= 8) {
                     headerFound = true;
                     row.sort((a,b) => a.transform[4] - b.transform[4]);  // sorting based on their horizontal position in pdf
                     headerLocations = [...row];
@@ -77,8 +88,19 @@ const _extractTransactionsFromPDF = (pdf, headerLocations=[]) => {
     }
     // console.log(arr);
     const table = [];
-    if(arr.length == 0) return { table, headerLocations };
-    headerLocations[1].str  = "description"; // It is named as "Narration", we want it as "Description" for our 
+    if(arr.length == 0) {
+        if(headerLocations.length && noHeaders === 0) {
+            return _extractTransactionsFromPDF(originalPDF, headerLocations, 1);
+        }
+        return { table, headerLocations };
+    }
+
+    let desc_i, date_i;
+    for(let i=0; i<headerLocations.length; i++) {
+        if(_metadata_.tableHeaders.date.includes(headerLocations[i].str)) date_i = i;
+        if(_metadata_.tableHeaders.description.includes(headerLocations[i].str)) desc_i = i;
+    }
+
     // console.log(headers);
     for(let i = 0; i < arr.length; i++) {
         const row = arr[i];
@@ -105,16 +127,21 @@ const _extractTransactionsFromPDF = (pdf, headerLocations=[]) => {
                     rowData["type"] = "income";
                 }
             }
-            let date = row[0].str;
+            let date = row[date_i].str;
             if(date.includes("-")) {
                 date = date.split("-");
-                rowData["date"] = new Date(`${date[1]},${date[0]},${date[2]}`).getTime();
+                rowData["date"] = new Date(`${date[1]},${date[0]},${date[2]}`)?.getTime();
             } else if(date.includes("/")) {
                 date = date.split("/");
-                rowData["date"] = new Date(`${date[1]},${date[0]},${date[2]}`).getTime();
+                rowData["date"] = new Date(`${date[1]},${date[0]},${date[2]}`)?.getTime();
+            } else if(date.includes(" ")) {
+                rowData["date"] = new Date(date)?.getTime();
             }
-            rowData["description"] = row[1].str;
-            table.push(rowData);
+            rowData["description"] = row[desc_i].str;
+            if(rowData.hasOwnProperty("date") && 
+                rowData.hasOwnProperty("description") &&
+                !isNaN(rowData.amount)) 
+                table.push(rowData);
         }
     }
     return {table, headerLocations};
