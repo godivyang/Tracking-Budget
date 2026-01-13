@@ -8,63 +8,6 @@ import { addTransaction, getLabels } from "../api/trackingBudget";
 import ChipsQuestion from "../components/ChipsQuestion";
 import Dialog from "../components/Dialog";
 
-const Categories = [
-    {key: 1, name: "Health"},
-    {key: 2, name: "Travel"},
-    {key: 3, name: "Groceries"},
-    {key: 4, name: "Food"},
-    {key: 5, name: "Shopping"},
-    {key: 6, name: "Just to keep"},
-    {key: 7, name: "Paid Back"},
-    {key: 8, name: "Bonus"},
-    {key: 9, name: "Salary"}
-];
-
-const Entities = [
-    {key: 1, name: "Railway Station"},
-    {key: 2, name: "Market"},
-    {key: 3, name: "Evergreen Foods"},
-    {key: 4, name: "Grand Father"},
-    {key: 5, name: "Friend"}
-];
-
-const Tags = [
-    {key: 1, name: "Festival"},
-    {key: 2, name: "Vacation"},
-    {key: 3, name: "Renovation"},
-    {key: 4, name: "Party"},
-    {key: 5, name: "Weekend"}];
-
-const Modes = [
-    {key: 1, name: "Cash"},
-    {key: 2, name: "Creadit Card"},
-    {key: 3, name: "UPI"},
-    {key: 4, name: "Bank 1"},
-    {key: 5, name: "Bank 2"}];
-
-const ChipQuestion = ({question, search, chips, filter, selected, onChange}) => {
-    return (
-    <div className="AdTr_GeneralQuestion">
-        <span className="AdTr_InlineSearch">
-            <span className="AdTr_Question">{question}:</span>
-            <input type="Search" className="AdTr_Search" onInput={search} placeholder="search"/>
-        </span>
-        <div className="AdTr_Chips">
-            {chips.filter(chip => chip.description.includes(filter)).length ?
-            chips.filter(chip => chip.description.includes(filter)).map(chip => {
-                let className = "AdTr_Chip";
-                if(typeof selected !== "object") className += chip._id === selected ? " selected" : "";
-                else className += selected.findIndex(sel => sel._id === chip._id) !== -1 ? " selected" : "";
-                return (<div className={className} key={chip._id}
-                        onClick={() => onChange(chip._id)}>{chip.description}</div>)
-            })
-            :
-            <div>No Data</div>}
-        </div>
-    </div>
-    )
-};
-
 const SuccessFragment = (details) => {
     return (
     <div className="AdTr_DialogDetails">
@@ -73,7 +16,7 @@ const SuccessFragment = (details) => {
         <span>Type: </span><strong>{details.type === "income" ? "Income" : "Expense"}</strong>
         <span>Category: </span><strong>{details.category}</strong>
         {details.description ? <><span>Description: </span><strong>{details.description}</strong></> : undefined}
-        {details.motive ? <><span>Motive: </span><strong>{details.motive === "want" ? "Want" : details.motive === "need" ? "Need" : "Investment"}</strong></> : undefined}
+        {details.motive && details.type === "expense" ? <><span>Motive: </span><strong>{details.motive === "want" ? "Want" : details.motive === "need" ? "Need" : "Investment"}</strong></> : undefined}
         {details.mode ? <><span>Mode: </span><strong>{details.mode}</strong></> : undefined}
         {details.entities && details.entities.length ? <><span>Entities: </span><strong>{(details.entities||[]).join(", ")}</strong></> : undefined}
         {details.tags && details.tags.length ? <><span>Tags: </span><strong>{(details.tags||[]).join(", ")}</strong></> : undefined}
@@ -213,7 +156,11 @@ const AddTransaction = ({setTitleType=()=>{}, editObj, updateEditObj}) => {
     const dateFormatter = (d) => {
         const newDate = new Date(d);
         if(isNaN(newDate)) return d;
-        return newDate.toISOString().split("T")[0];
+        // return newDate.toISOString().split("T")[0];
+        let fullYear = newDate.getFullYear(), month = newDate.getMonth() + 1, date = newDate.getDate();
+        if(month < 10) month = "0" + month;
+        if(date < 10) date = "0" + date;
+        return `${fullYear}-${month}-${date}`;
     }
 
     const updateCategory = (chip) => {
@@ -308,10 +255,10 @@ const AddTransaction = ({setTitleType=()=>{}, editObj, updateEditObj}) => {
         <span className="title">Add Transaction</span>
     </motion.header>}
     <motion.div 
-        initial={{ y: -window.innerHeight, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -window.innerHeight, opacity: 0 }}
-        transition={{ type: "spring", duration: 0.4 }}
+        initial={!editObj && { y: -window.innerHeight, opacity: 0 }}
+        animate={!editObj && { y: 0, opacity: 1 }}
+        exit={!editObj && { y: -window.innerHeight, opacity: 0 }}
+        transition={!editObj && { type: "spring", duration: 0.4 }}
         className="AdTr_Questions">
         <div className="AdTr_TypeQuestion">
             <Button text="Expense" type={type === "expense" ? "default" : "simple"}
@@ -348,6 +295,7 @@ const AddTransaction = ({setTitleType=()=>{}, editObj, updateEditObj}) => {
             <span className="AdTr_Question">Description:</span>
             <textarea className="AdTr_Input" value={description} onChange={updateDescription}/>
         </div>
+        {type === "expense" &&
         <div className="AdTr_MotiveQuestion">
             <Button text="Want" type={motive === "want" ? "default" : "simple"}
             press={() => updateMotive("want")}/>
@@ -355,7 +303,7 @@ const AddTransaction = ({setTitleType=()=>{}, editObj, updateEditObj}) => {
             press={() => updateMotive("need")}/>
             <Button text="Investment" type={motive === "investment" ? "default" : "simple"}
             press={() => updateMotive("investment")}/>
-        </div>
+        </div>}
         <ChipsQuestion question="Mode of Transaction" chips={addTransactionModel.modes} chipSelected={mode} onChange={updateMode}/>
         <ChipsQuestion question="Entities" chips={addTransactionModel.entities} chipSelected={entities} onChange={updateEntities} multiSelect={true}/>
         <ChipsQuestion question="Tags" chips={addTransactionModel.tags} chipSelected={tags} onChange={updateTags} multiSelect={true}/>

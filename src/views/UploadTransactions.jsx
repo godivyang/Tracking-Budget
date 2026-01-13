@@ -304,10 +304,10 @@ const UploadTransactions = ({setTitleType, busyIndicator}) => {
 
     const onSubmitAll = () => {
         getLabels("category").then(categories => {
-            Promise.all(transactions.forEach((transaction) => {
+            Promise.all(transactions.map((transaction) => {
                 const category = categories.find(cat => cat.description == transaction.category);
                 transaction.category = category._id;
-                addTransaction(transaction);
+                return addTransaction(transaction);
             })).then(() => {
                 console.log("All transactions saved successfully!");
                 resetPage();
@@ -319,9 +319,10 @@ const UploadTransactions = ({setTitleType, busyIndicator}) => {
     {selectedTransactionIndex != -1 &&
     // <Dialog content={TransactionFragment(transactions[selectedTransactionIndex], categories, (description)=>updateCategory(description))} 
     <Dialog 
+    key={selectedTransactionIndex}
     content={<AddTransaction 
         editObj={currentCopyTransaction} 
-        updateEditObj={updateCopyTransactions}/>}
+        updateEditObj={updateCopyTransactions} key={selectedTransactionIndex}/>}
     open={dialogOpen} 
     closeDialog={() => setDialogOpen(false)} 
     title={`${copyTransactions[selectedTransactionIndex].isEdited ? "*" : ""}Edit Transaction ${selectedTransactionIndex+1}`}

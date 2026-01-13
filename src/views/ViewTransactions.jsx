@@ -3,7 +3,7 @@ import "./ViewTransactions.css";
 import { useEffect, useRef, useState } from "react";
 import Button from "../components/Button";
 import { Back, Income, Expense, Close } from "../lib/Icons";
-import { getLabels, getTransactions } from "../api/trackingBudget";
+import { deleteTransaction, getLabels, getTransactions } from "../api/trackingBudget";
 import Dialog from "../components/Dialog";
 import ChipsQuestion from "../components/ChipsQuestion";
 
@@ -194,9 +194,19 @@ const ViewTransactions = ({setTitleType, busyIndicator}) => {
         setFilterDialogOpen(true);
     }
 
+    const onTransactionDelete = () => {
+        confirm("Are you sure you want to delete this transaction?");
+        deleteTransaction(details._id).then(() => {
+            setDetailsDialogOpen(false);
+            getFilteredData();
+        });
+    };
+
     return (
     <>
-    <Dialog title="Details" content={details && DetailsFragment(details)} footer={<><Button text="Delete"/><Button text="Edit"/></>} 
+    <Dialog title="Details" content={details && DetailsFragment(details)} footer={<>
+        <Button text="Delete" press={onTransactionDelete}/>
+        <Button text="Edit"/></>} 
         closeDialog={() => setDetailsDialogOpen(false)} open={detailsDialogOpen}/>
     <Dialog 
     title={filterSelected} 

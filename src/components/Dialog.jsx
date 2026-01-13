@@ -16,9 +16,9 @@ const Dialog = ({title="Dialog", content, footer, closeDialog=()=>{}, open=false
     {dialogOpen ?
     <div className="Dialog_Background">
         <motion.div 
-        initial={{ y: window.innerHeight, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: window.innerHeight, opacity: 0 }}
+        initial={{ x: window.innerWidth, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: -window.innerWidth, opacity: 0 }}
         transition={{ type: "spring", duration: 0.4 }} 
         className={`Dialog_Container ${bottom ? "bottom" : ""}`}>
             <div className="Dialog_Header">
