@@ -302,16 +302,20 @@ const UploadTransactions = ({setTitleType, busyIndicator}) => {
         }
     }
 
-    const onSubmitAll = () => {
-        getLabels("category").then(categories => {
-            Promise.all(transactions.map((transaction) => {
-                const category = categories.find(cat => cat.description == transaction.category);
-                transaction.category = category._id;
-                return addTransaction(transaction);
-            })).then(() => {
-                console.log("All transactions saved successfully!");
-                resetPage();
-            });
+    const onSubmitAll = async () => {
+        const categories = getLabels("category");
+        const entities = getLabels("entities");
+        const modes = getLabels("modes");
+        const tags = getLabels("tags");
+        Promise.all(transactions.map((transaction) => {
+            transaction.category = (categories.find(cat => cat.description == transaction.category)?._id)||transaction.category;
+            transaction.entities = transaction.entities.map(ent => (entities.find(e => e.description == ent)?._id)||ent);
+            transaction.modes = transaction.modes.map(mod => (modes.find(m => m.description == mod)?._id)||mod);
+            transaction.tags = transaction.tags.map(tag => (tags.find(e => e.description == tag)?._id)||tag);
+            return addTransaction(transaction);
+        })).then(() => {
+            alert("All transactions saved successfully!");
+            resetPage();
         });
     }
 

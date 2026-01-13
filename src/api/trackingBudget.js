@@ -30,7 +30,9 @@ const checkIfLogin = async (code) => {
 // ____________________________________________
 // creating label (category, entity, mode, tag)
 // ____________________________________________
+let _labels = {};
 export const addLabel = async (label, description) => {
+    delete _labels[label];
     try {
         const response = await axiosInstance.post(`/${label}`, { description });
         return response.data;
@@ -42,19 +44,22 @@ export const addLabel = async (label, description) => {
 // ____________________________________________
 // reading labels (category, entity, mode, tag)
 // ____________________________________________
-export const getLabels = async (label) => {
+export const getLabels = (label) => {
+    if(_labels[label]) return _labels[label];
     try {
-        const response = await axiosInstance.get(`/${label}`);
-        return response.data;
+        _labels[label] = axiosInstance.get(`/${label}`);
     } catch (e) {
+        delete _labels[label];
         throw new Error(e);
     }
+    return _labels[label];
 }
 
 // ____________________________________________
 // deleting label (category, entity, mode, tag)
 // ____________________________________________
 export const deleteLabel = async (label, _id) => {
+    delete _labels[label];
     try {
         const response = await axiosInstance.delete(`/${label}/${_id}`);
         return response.data;
@@ -67,6 +72,7 @@ export const deleteLabel = async (label, _id) => {
 // updating label (category, entity, mode, tag)
 // ____________________________________________
 export const updateLabel = async (label, _id, description) => {
+    delete _labels[label];
     try {
         const response = await axiosInstance.patch(`/${label}/${_id}`, { description });
         return response.data;
