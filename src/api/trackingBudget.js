@@ -47,7 +47,7 @@ export const addLabel = async (label, description) => {
 export const getLabels = (label) => {
     if(_labels[label]) return _labels[label];
     try {
-        _labels[label] = axiosInstance.get(`/${label}`);
+        _labels[label] = axiosInstance.get(`/${label}`).then(res => res.data);
     } catch (e) {
         delete _labels[label];
         throw new Error(e);
