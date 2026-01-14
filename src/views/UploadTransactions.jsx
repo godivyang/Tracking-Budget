@@ -303,10 +303,10 @@ const UploadTransactions = ({setTitleType, busyIndicator}) => {
     }
 
     const onSubmitAll = async () => {
-        const categories = getLabels("category");
-        const entities = getLabels("entities");
-        const modes = getLabels("modes");
-        const tags = getLabels("tags");
+        const categories = await getLabels("category");
+        const entities = await getLabels("entities");
+        const modes = await getLabels("modes");
+        const tags = await getLabels("tags");
         Promise.all(transactions.map((transaction) => {
             transaction.category = (categories.find(cat => cat.description == transaction.category)?._id)||transaction.category;
             transaction.entities = transaction.entities.map(ent => (entities.find(e => e.description == ent)?._id)||ent);
