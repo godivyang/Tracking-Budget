@@ -99,8 +99,8 @@ const LabelsView = ({setTitleType, type, busyIndicator}) => {
     }
 
     const onSaveClick = (e) => {
-        labelData = labelData.description.trim();
-        if(!labelData) {
+        let _labelData = labelData.description.trim();
+        if(!_labelData) {
             alert("Please fill the description")
             return;
         }
