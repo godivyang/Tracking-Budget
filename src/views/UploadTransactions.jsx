@@ -309,8 +309,8 @@ const UploadTransactions = ({setTitleType, busyIndicator}) => {
         const tags = await getLabels("tag");
         Promise.all(transactions.map((transaction) => {
             transaction.category = (categories.find(cat => cat.description == transaction.category)?._id)||transaction.category;
+            transaction.mode = (modes.find(mod => mod.description == transaction.mode)?._id)||transaction.mode;
             transaction.entities = (transaction.entities||[]).map(ent => (entities.find(e => e.description == ent)?._id)||ent);
-            transaction.modes = (transaction.modes||[]).map(mod => (modes.find(m => m.description == mod)?._id)||mod);
             transaction.tags = (transaction.tags||[]).map(tag => (tags.find(e => e.description == tag)?._id)||tag);
             return addTransaction(transaction);
         })).then(() => {
