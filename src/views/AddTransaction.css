@@ -35,6 +35,7 @@ header, footer {
     background: var(--color-one);
     .contentRight {
         margin-left: auto;
+        display: inline-flex;
     }
 }
 

@@ -9,12 +9,27 @@ main.LaVi_Container {
 .LaVi_label {
     display: flex;
     border-radius: 10px;
-    background-color: var(--color-four);
-    color: var(--color-one);
+    background-color: var(--color-one);
+    color: var(--color-four);
     padding: 10px;
     font-size: large;
     font-weight: bold;
     cursor: pointer;
+    box-shadow: 1px 1px 5px black;
+    &.LaVi_label:hover:not(.dragging) {
+        background-color: var(--color-four);
+        color: var(--color-one);
+        border-radius: 10px;
+    }
+    &.dragging {
+        border: 2px solid var(--color-four);
+    }
+    &.holding {
+        background-color: var(--color-four);
+        color: var(--color-one);
+        border-radius: 10px;
+        border: 2px dashed var(--color-one);
+    }
 }
 
 .LaVi_DialogContainer {

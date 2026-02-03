@@ -4,44 +4,8 @@ import Button from "../components/Button";
 import { Back, Close, Add } from "../lib/Icons";
 import { motion } from "framer-motion";
 import "./LabelsView.css";
-import { getLabels, updateLabel, addLabel, deleteLabel } from "../api/trackingBudget";
+import { getLabels, updateLabel, addLabel, deleteLabel, updateOrder } from "../api/trackingBudget";
 import Dialog from "../components/Dialog";
-
-const Categories = [
-    {_id: 1, description: "Health"},
-    {_id: 2, description: "Travel"},
-    {_id: 3, description: "Groceries"},
-    {_id: 4, description: "Food"},
-    {_id: 5, description: "Shopping"},
-    {_id: 6, description: "Just to keep"},
-    {_id: 7, description: "Paid Back"},
-    {_id: 8, description: "Bonus"},
-    {_id: 9, description: "Salary"}
-];
-
-const Entities = [
-    {_id: 1, description: "Railway Station"},
-    {_id: 2, description: "Market"},
-    {_id: 3, description: "Father"},
-    {_id: 4, description: "Grand Father"},
-    {_id: 5, description: "Friend"}
-];
-
-const Modes = [
-    {_id: 1, description: "Cash"},
-    {_id: 2, description: "Creadit Card"},
-    {_id: 3, description: "UPI"},
-    {_id: 4, description: "Bank 1"},
-    {_id: 5, description: "Bank 2"}
-];
-
-const Tags = [
-    {_id: 1, description: "Festival"},
-    {_id: 2, description: "Vacation"},
-    {_id: 3, description: "Renovation"},
-    {_id: 4, description: "Party"},
-    {_id: 5, description: "Weekend"}
-];
 
 const titles = {
     category: "Categories",
@@ -60,12 +24,17 @@ const LabelsView = ({setTitleType, type, busyIndicator}) => {
     const [labelData, setLabelData] = useState({_id: "", description: ""});
     const [dialogOpen, setDialogOpen] = useState(false);
 
+    const [dropIndex, setdropIndex] = useState();
+    const [orderMap, setOrderMap] = useState(new Map());
+    const [mappingChanged, setMappingChanged] = useState(false);
+
     useEffect(() => {
         setTitleType(2);
         if(type) setTitle(titles[type]);
         busyIndicator(true, `Loading your ${titles[type]}...`);
         getLabels(type).then((data) => {
             setLabels(data);
+            setOrderMap(data.map(label => label._id));
         }).catch((e) => {
 
         }).then(() => {
@@ -74,6 +43,7 @@ const LabelsView = ({setTitleType, type, busyIndicator}) => {
     }, []);
 
     const onLabelClick = (labelData) => {
+        if(mappingChanged) return;
         setLabelData({...labelData});
         showDialog();
     }
@@ -145,6 +115,54 @@ const LabelsView = ({setTitleType, type, busyIndicator}) => {
         });
     }
 
+    const _checkIfMappingChanged = (updated) => {
+        for(let i = 0; i < labels.length; i++) {
+            if(updated[i]._id === orderMap[i]) continue;
+            setMappingChanged(true);
+            return true;
+        }
+        setMappingChanged(false);
+        return false;
+    };
+
+    const onTileDrop = (index, e) => {
+        const updated = [...labels];
+        const [moved] = updated.splice(index, 1);
+        updated.splice(dropIndex, 0, moved);
+        setLabels([...updated]);
+        setdropIndex(undefined);
+        _checkIfMappingChanged(updated);
+    }
+
+    const onTileDragOver = (index, e) => {
+        e.preventDefault();
+        setdropIndex(index);
+    };
+
+    const onTileDragStart = (index, e) => {
+        setdropIndex(index);
+    };
+
+    const saveNewOrder = () => {
+        const newMap = labels.map(label => label._id);
+        busyIndicator(true, "Saving the new order...");
+        updateOrder(type, newMap).then(() => {
+            busyIndicator(false);
+            setOrderMap(newMap);
+            setMappingChanged(false);
+        }).catch((e) => {
+            alert("Sorting failed");
+            cancelNewOrder();
+            busyIndicator(false);
+        });
+    };
+
+    const cancelNewOrder = () => {
+        labels.sort((a,b) => orderMap.indexOf(a._id) - orderMap.indexOf(b._id));
+        setLabels([...labels]);
+        setMappingChanged(false);
+    }
+
     return (
     <>
     <Dialog content={<input value={labelData.description} className="AdTr_Input" onChange={onDescriptionChange}/>} 
@@ -154,21 +172,26 @@ const LabelsView = ({setTitleType, type, busyIndicator}) => {
         initial={{ x: -window.innerWidth, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: -window.innerWidth, opacity: 0 }}
-        transition={{ type: "spring", duration: 0.4 }}>
+        transition={{ type: "spring", duration: 0.2 }}>
         <Button press={() => navigate("/")} icon={<Back/>}/>
         <span className="title">{title}</span>
         <span className="contentRight">
-            <Button press={addNew} icon={<Add/>} text="New"/>
+            {!mappingChanged && <Button press={addNew} icon={<Add/>} text="New"/>}
+            {mappingChanged && <Button press={cancelNewOrder} text="Cancel"/>}
+            {mappingChanged && <Button press={saveNewOrder} text="Save"/>}
         </span>
     </motion.header>
     <motion.main 
         initial={{ y: window.innerHeight, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: window.innerHeight, opacity: 0 }}
-        transition={{ type: "spring", duration: 0.4 }}
+        transition={{ type: "spring", duration: 0.2 }}
         className="LaVi_Container">
-        {labels.map(label => 
-            <div key={label._id} className="LaVi_label" onClick={() => onLabelClick(label)}>{label.description}</div>
+        {labels.map((label, i) => 
+            <motion.div layout key={label._id} className={`LaVi_label ${!isNaN(dropIndex) ? "dragging" : ""} ${dropIndex === i ? "holding" : ""}`} onClick={() => onLabelClick(label)}
+             draggable={true} onDragStart={(e) => onTileDragStart(i,e)} onDragOver={(e) => onTileDragOver(i,e)} onDragEnd={(e) => onTileDrop(i,e)}>
+                {label.description}
+            </motion.div>
         )}
     </motion.main>
     </>)

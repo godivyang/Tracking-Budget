@@ -47,7 +47,7 @@ export const addLabel = async (label, description) => {
 export const getLabels = (label) => {
     if(_labels[label]) return _labels[label];
     try {
-        _labels[label] = axiosInstance.get(`/${label}`).then(res => res.data);
+        _labels[label] = axiosInstance.get(`/${label}`).then(res => res.data.data);
     } catch (e) {
         delete _labels[label];
         throw new Error(e);
@@ -75,6 +75,19 @@ export const updateLabel = async (label, _id, description) => {
     delete _labels[label];
     try {
         const response = await axiosInstance.patch(`/${label}/${_id}`, { description });
+        return response.data;
+    } catch (e) {
+        throw new Error(e);
+    }
+}
+
+// ______________________________________________
+// rearrange labels (category, entity, mode, tag)
+// ______________________________________________
+export const updateOrder = async (label, order) => {
+    delete _labels[label];
+    try {
+        const response = await axiosInstance.post(`/${label}/updateOrder`, { order });
         return response.data;
     } catch (e) {
         throw new Error(e);

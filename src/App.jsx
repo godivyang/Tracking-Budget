@@ -60,18 +60,19 @@ const App = () => {
           localStorage.removeItem(address);
           setUserName(userName);
           if (code) window.location.href = appURL;
-      }).catch((e) => {
-          if (localStorage.getItem(address) === "fresh") {
-              window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=" + appName;
-              localStorage.setItem(address, "tried");
-          } else {
-              localStorage.removeItem(address);
+    }).catch((e) => {
+        console.log(localStorage.getItem(address))
+        if (localStorage.getItem(address) === "fresh") {
+            localStorage.setItem(address, "tried");  
+            window.location.href = process.env.REACT_APP_ULTIMATE_UTILITY_URL + "?redirect=" + appName;
+        } else {
+            localStorage.removeItem(address);
               // alert("SSO LOGIN FAILED!");
-              setLoginFailed(true);
-          }
-      }).then(() => {
-          clearInterval(timer);
-      });
+            setLoginFailed(true);
+        }
+    }).then(() => {
+        clearInterval(timer);
+    });
   };
 
   const refreshPage = () => {
